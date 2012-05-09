@@ -1,0 +1,59 @@
+<head>
+  <title>summarizr on meteor</title>
+</head>
+
+<body>
+    <div class="container-fluid" style="margin-top:50px">
+        <div class="navbar navbar-fixed-top">
+        {{> navbar}}
+        </div>
+    </div>
+    <div class="row">
+  {{> hello}}
+    </div>
+    <div class="span3">
+  {{> sidebar}}
+    </div>
+    <div class="span9">
+  {{> maincontent}}
+    </div>
+</body>
+
+<template name="hello">
+  <h1>Hello World!</h1>
+  {{greeting}}
+  <input type="button" value="click" />
+</template>
+
+<template name="navbar">
+    <div class="navbar-inner">
+                    <div class="container">
+                        <a class="brand" href="#">Summarizr client for bamboo ({{foo}})</a>
+                        <div class="pull-right">
+                            <input id="datasource-url" type="text" name="url" size="100" value="http://formhub.org/education/forms/schooling_status_format_18Nov11/data.csv"/>
+                            <button class="btn" id="datasource-change-button" > Change </button>
+                        </div>
+                    </div>
+                    </div>
+</template>
+
+<template name="sidebar">
+    Group by: 
+            <select id="grouping-select"> </select> <br/>
+
+            Histograms to show:
+            
+            <select id="histogram-select" multiple="multiple" style="height:300px;"> </select> <br/>
+            
+            Side-by-side:
+            <input type="checkbox" name="side-by-side" id="side-by-side" value="yes"> </input> <br/>
+</template>
+
+<template name="maincontent">
+    <div id="graphs"  class="container">
+        <ul id="tabs" class="nav nav-tabs"></ul>
+        <ul id="alt-tabs" class="row-fluid"></ul>
+        <div id="content" class="tab-content"></div>
+    </div>
+</template>
+
