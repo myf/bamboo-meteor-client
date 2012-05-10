@@ -3,13 +3,12 @@ root = global ? window
 if root.Meteor.is_client
     root.Template.navbar.foo = ->
         "Summarize!"
+    root.Template.maincontent.response = "(placeholder)"
     
     root.Template.navbar.events = "click button": ->
-        console.log($('#datasource-url').val())
+        console.log('client-side click')
+        Meteor.call('register_dataset', $('#datasource-url').val())
 
-    makeTitle = (slug) ->
-        words = (word.charAt(0).ToUpperCase() + word.slice(1) for word in slug.split('_'))
-        words.join(' ')
     $tabsUl = $('#tabs')
     $altTabsUl = $('#alt-tabs')
     $sideBySide = $('#side-by-side')

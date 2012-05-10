@@ -11,6 +11,10 @@ Install meteor and packages:
     meteor add coffeescript
     meteor add jquery
 
+Install node (download from http://nodejs.com) and request package:
+    
+    npm install request
+
 Run meteor, in your bamboo-meteor-client directory:
 
     meteor
