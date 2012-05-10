@@ -2,22 +2,24 @@ root = global ? window
 
 require = __meteor_bootstrap__.require
 request = require('request')
+bambooURL = 'http://localhost:8080'
 
 Meteor.methods(
     register_dataset: (url) ->
-        console.log('got to the server' + url)
+        console.log("server received url: " + url)
         post_options =
-            uri: 'http://localhost:8080/datasets'
+            uri: bambooURL + '/datasets'
             method: 'POST'
             form: {url: url}
-        console.log(post_options)
         request(post_options, (error, body, response) ->
             ts = Date.now()
             Fiber( ->
-                Datasets.insert
-                    id: response["id"]
-                    url: url
-                    cached_at: ts
+                if(!Datasets.find({url: url}).count)
+                    Datasets.insert
+                        id: response["id"]
+                        url: url
+                        cached_at: ts
+                # else figure out caching
             ).run()
         )
 )

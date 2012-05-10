@@ -7,7 +7,9 @@ if root.Meteor.is_client
     
     root.Template.navbar.events = "click button": ->
         console.log('client-side click')
-        Meteor.call('register_dataset', $('#datasource-url').val())
+        url = $('#datasource-url').val()
+        Meteor.call('register_dataset', url)
+        dataset = Datasets.find({url: url}).fetch()[0]
 
     $tabsUl = $('#tabs')
     $altTabsUl = $('#alt-tabs')
