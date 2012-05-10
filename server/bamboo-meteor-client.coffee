@@ -9,9 +9,15 @@ Meteor.methods(
         post_options =
             uri: 'http://localhost:8080/datasets'
             method: 'POST'
-            body: JSON.stringify({url: url})
+            form: {url: url}
         console.log(post_options)
         request(post_options, (error, body, response) ->
-            console.log(response)
+            ts = Date.now()
+            Fiber( ->
+                Datasets.insert
+                    id: response["id"]
+                    url: url
+                    cached_at: ts
+            ).run()
         )
 )
