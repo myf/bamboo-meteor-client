@@ -6,7 +6,7 @@ if root.Meteor.is_client
     root.Template.maincontent.response = "(placeholder)"
     
     root.Template.navbar.events = "click button": ->
-        console.log('client-side click')
+        console.log 'client-side click'
         url = $('#datasource-url').val()
         Meteor.call('register_dataset', url)
         dataset = Datasets.find({url: url}).fetch()[0]
