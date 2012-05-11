@@ -2,6 +2,7 @@ bamboo-meteor-client
 ====================
 
 A basic bamboo client built on meteor.js
+v0.1: emulate /static/bar_graphs.html on bamboo (see example at http://optimus.modilabs.org:9000/static/bar_graphs.html)
 
 installation
 ============
