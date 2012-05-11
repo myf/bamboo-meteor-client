@@ -3,28 +3,43 @@ root = global ? window
 require = __meteor_bootstrap__.require
 request = require('request')
 bambooURL = 'http://localhost:8080'
+datasetsURL = bambooURL + '/datasets'
+summaryURLf = (id,group) -> datasetsURL + '/' + id + '/summary' + if group then '?group=' + group else ''
 
 Meteor.methods(
     register_dataset: (url) ->
         console.log "server received url: " + url
-        post_options =
-            uri: bambooURL + '/datasets'
-            method: 'POST'
-            form: {url: url}
-        request(post_options, (error, body, response) ->
-            ts = Date.now()
-            Fiber(->
-                cursor = Datasets.find({url: url})
-                if(!cursor.count())
+        cursor = Datasets.find({url: url})
+        if(!cursor.count())
+            post_options =
+                uri: datasetsURL
+                method: 'POST'
+                form: {url: url}
+            request(post_options, (e, b, response) ->
+                ts = Date.now()
+                bambooID = JSON.parse(response).id
+                Fiber(->
                     Datasets.insert
-                        id: JSON.parse(response).id
+                        id: bambooID
                         url: url
                         cached_at: ts
                 # else figure out caching
-                ###
-                else
-                    console.log cursor.fetch()
-                ###
-            ).run()
+                ).run()
+                request.get(summaryURLf(bambooID), (e, b, response) ->
+                    Fiber(->
+                        Datasets.update({id: bambooID}, {$set: {summary:JSON.parse(response)}})
+                    ).run()
+                )
+            )
+    summarize_by_group: (obj) ->
+        [bambooID, group] = obj
+        #TODO: caching of group summaries
+        console.log(summaryURLf(bambooID, group))
+        request.get(summaryURLf(bambooID, group), (e, b, response) ->
+                obj = {}
+                obj[group] = JSON.parse(response)
+                Fiber(-> 
+                    Datasets.update({id: bambooID}, {$addToSet: {bummary: obj}})
+                ).run()
         )
 )
