@@ -34,12 +34,20 @@ Meteor.methods(
     summarize_by_group: (obj) ->
         [bambooID, group] = obj
         #TODO: caching of group summaries
-        console.log(summaryURLf(bambooID, group))
-        request.get(summaryURLf(bambooID, group), (e, b, response) ->
-                obj = {}
-                obj[group] = JSON.parse(response)
-                Fiber(-> 
-                    Datasets.update({id: bambooID}, {$addToSet: {bummary: obj}})
-                ).run()
-        )
+        cached = false
+        for item in Datasets.find({id:bambooID}).fetch()[0].bummary
+            if item[group]
+                cached = true
+
+        if !(cached)
+            console.log "caching"
+            request.get(summaryURLf(bambooID, group), (e, b, response) ->
+                    obj = {}
+                    obj[group] = JSON.parse(response)
+                    Fiber(-> 
+                        Datasets.update({id: bambooID}, {$addToSet: {bummary: obj}})
+                    ).run()
+            )
+        else
+            console.log "already cached"
 )
