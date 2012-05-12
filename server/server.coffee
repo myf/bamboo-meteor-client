@@ -40,7 +40,7 @@ Meteor.methods(
                 cached = true
 
         if !(cached)
-            console.log "caching"
+            console.log "caching "+bambooID
             request.get(summaryURLf(bambooID, group), (e, b, response) ->
                     obj = {}
                     obj[group] = JSON.parse(response)
@@ -49,5 +49,5 @@ Meteor.methods(
                     ).run()
             )
         else
-            console.log "already cached"
+            console.log "already cached " + bambooID
 )
