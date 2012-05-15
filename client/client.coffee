@@ -26,4 +26,8 @@ if root.Meteor.is_client
             $select.append('<option value="' + x + '">' + makeTitle(x) + '</option>')
         group2select(groups, $histogramSelect)
 
+Meteor.methods(
+    raise_alert: ->
+        alert "hello"
+)
 
