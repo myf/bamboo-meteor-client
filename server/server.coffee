@@ -26,11 +26,12 @@ Meteor.methods(
                         cached_at: ts
                 # else figure out caching
                 ).run()
-                request.get(summaryURLf(bambooID), (e, b, response) ->
+                callback = ->request.get(summaryURLf(bambooID), (e, b, response) ->
                     Fiber(->
                         Datasets.update({id: bambooID}, {$set: {summary:JSON.parse(response)}})
                     ).run()
                 )
+                setTimeout callback, 1000
             )
     summarize_by_group: (obj) ->
         #caching
