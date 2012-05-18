@@ -18,6 +18,7 @@ Meteor.methods(
                 form: {url: url}
             request(post_options, (e, b, response) ->
                 ts = Date.now()
+                console.log response
                 bambooID = JSON.parse(response).id
                 Fiber(->
                     Datasets.insert
