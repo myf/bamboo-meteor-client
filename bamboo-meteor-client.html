@@ -1,22 +1,21 @@
 <head>
   <title>summarizr on meteor</title>
-    <script src="client/polychart.standalone.0.0.2.min.js"></script>
   
 </head>
 
 <body>
     <div class="container-fluid" style="margin-top:50px">
         <div class="navbar navbar-fixed-top">
-        {{> navbar}}
+            {{> navbar}}
         </div>
     </div>
     <div class="row">
     </div>
     <div class="span3">
-  {{> sidebar}}
+        {{> sidebar}}
     </div>
     <div class="span9">
-  {{> maincontent}}
+        {{> maincontent}}
     </div>
 </body>
 
@@ -33,23 +32,31 @@
 </template>
 
 <template name="sidebar">
+    <!--
     Group by: 
-            <select id="grouping-select"> </select> <br/>
+            <select id="grouping-select" multiple="multiple"> </select> <br/>
+    -->
 
-    Histograms to show:
+    Histograms!
             
             <select id="histogram-select" multiple="multiple" style="height:300px;"> </select> <br/>
+    <!--
             
     Side-by-side:
             <input type="checkbox" name="side-by-side" id="side-by-side" value="yes"> </input> <br/>
+    -->
 </template>
 
 <template name="maincontent">
+    <div id="selector">
+        {{#each columns}}
+            foo
+        {{/each}}
+    </div>
     <div id="graphs"  class="container">
         <ul id="tabs" class="nav nav-tabs"></ul>
         <ul id="alt-tabs" class="row-fluid"></ul>
         <div id="content" class="tab-content"></div>
     </div>
-    {{response}}
 </template>
 
