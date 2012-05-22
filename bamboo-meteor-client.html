@@ -22,7 +22,7 @@
 <template name="navbar">
     <div class="navbar-inner">
                     <div class="container">
-                        <a class="brand" href="#">Summarizr client for bamboo ({{foo}})</a>
+                        <a class="brand" href="#">Summarizr client for bamboo</a>
                         <div class="pull-right">
                             <input id="datasource-url" type="text" name="url" size="100" value="http://formhub.org/education/forms/schooling_status_format_18Nov11/data.csv"/>
                             <button class="btn" id="datasource-change-button" > Change </button>
@@ -48,10 +48,10 @@
 </template>
 
 <template name="maincontent">
-    <div id="selector">
+    <div id="column-list">
         <ul>
         {{#each columns}}
-            <li>{{this}}</li>
+            {{> column}}
         {{/each}}
         </ul>
     </div>
@@ -60,5 +60,15 @@
         <ul id="alt-tabs" class="row-fluid"></ul>
         <div id="content" class="tab-content"></div>
     </div>
+</template>
+
+<template name="column">
+<li>
+    <button  data-toggle="collapse" data-target="#{{this}}">{{this}}</button>
+    <div class="collapse" id="{{this}}">
+        Content for {{this}}
+    </div>
+</li>
+
 </template>
 

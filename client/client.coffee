@@ -9,13 +9,7 @@ if root.Meteor.is_client
         ida = dataset.id
         summary = dataset.summary
         name_list =_(summary["(ALL)"]).pluck("name")
-        name_html = ""
-        for item in name_list
-            name_html = name_html + "<li>" + item + "</li>\n"
-        console.log name_html
 
-    root.Template.navbar.foo = ->
-        "Summarize!"
 
     root.Template.maincontent.columns = ->
         u = "http://formhub.org/education/forms/schooling_status_format_18Nov11/data.csv"
@@ -23,9 +17,7 @@ if root.Meteor.is_client
         if Datasets.find({url:u}).count() > 0
             summary = Datasets.find({url: u}).fetch()[0].summary
             name_list =_(summary["(ALL)"]).pluck("name")
-            console.log name_list
-        return name_list ? ["a","b","c"]
-
+        name_list
 
     root.Template.navbar.events = "click button": ->
         url = $('#datasource-url').val()
