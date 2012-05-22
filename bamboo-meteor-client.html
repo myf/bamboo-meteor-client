@@ -49,9 +49,11 @@
 
 <template name="maincontent">
     <div id="selector">
+        <ul>
         {{#each columns}}
-            foo
+            <li>{{this}}</li>
         {{/each}}
+        </ul>
     </div>
     <div id="graphs"  class="container">
         <ul id="tabs" class="nav nav-tabs"></ul>

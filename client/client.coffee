@@ -7,7 +7,6 @@ if root.Meteor.is_client
     populate = (u)->
         dataset = Datasets.find({url: u}).fetch()[0]
         ida = dataset.id
-        console.log ida
         summary = dataset.summary
         name_list =_(summary["(ALL)"]).pluck("name")
         name_html = ""
@@ -19,11 +18,12 @@ if root.Meteor.is_client
         "Summarize!"
 
     root.Template.maincontent.columns = ->
-        id = "7e14eba24ccd4894a9d5b27bc0e58a9a"
-        console.log Datasets.find({id:id}).count()
-        if Datasets.find({id:id}).count() is not 0
-            summary = Datasets.find({id:id}).fetch()[0].summary
+        u = "http://formhub.org/education/forms/schooling_status_format_18Nov11/data.csv"
+        console.log 'data count: ' + Datasets.find({url:u}).count()
+        if Datasets.find({url:u}).count() > 0
+            summary = Datasets.find({url: u}).fetch()[0].summary
             name_list =_(summary["(ALL)"]).pluck("name")
+            console.log name_list
         return name_list ? ["a","b","c"]
 
 
@@ -179,11 +179,3 @@ if root.Meteor.is_client
     )
         
     ###
-
- 
-
-Meteor.methods(
-    raise_alert: (placeholder)->
-        alert placeholder
-)
-
