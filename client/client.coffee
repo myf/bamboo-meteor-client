@@ -1,7 +1,6 @@
 root = global ? window
 bambooUrl = "/"
 observationsUrl = bambooUrl + "datasets"
-name_html = "oh hai"
 
 if root.Meteor.is_client
     populate = (u)->
@@ -14,8 +13,9 @@ if root.Meteor.is_client
     root.Template.maincontent.columns = ->
         u = "http://formhub.org/education/forms/schooling_status_format_18Nov11/data.csv"
         console.log 'data count: ' + Datasets.find({url:u}).count()
-        if Datasets.find({url:u}).count() > 0
-            summary = Datasets.find({url: u}).fetch()[0].summary
+        cursor = Datasets.find({url:u})
+        if cursor.count() > 0
+            summary = cursor.fetch()[0].summary
             name_list =_(summary["(ALL)"]).pluck("name")
         name_list
 
