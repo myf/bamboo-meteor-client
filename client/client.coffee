@@ -9,9 +9,6 @@ if root.Meteor.is_client
         summary = dataset.summary
         name_list =_(summary["(ALL)"]).pluck("name")
 
-    
-
-
     root.Template.maincontent.columns = ->
         u = "http://formhub.org/education/forms/schooling_status_format_18Nov11/data.csv"
         console.log 'data count: ' + Datasets.find({url:u}).count()
@@ -28,21 +25,18 @@ if root.Meteor.is_client
         #setTimeout beceause it does take time for bamboo
         #to populate the result into the database
         ###
-        if !(Datasets.find(url:url).count())
+        if (Datasets.findOne(url:url))
+            console.log "cached"
+            populate(url)
+        else
             console.log "caching..."
             Meteor.call('register_dataset', url)
             setTimeout populate(url), 2000
-        else
-            console.log "cahced"
-            populate(url)
-
-
 
 Meteor.methods(
     make_chart: (obj) ->
         [div, dataElement] = obj
         #dataElement.titleName = makeTitle(dataElement.name)
-        dataElement.titleName = "testing"
         data = dataElement.data
         console.log data
         dataSize = _.size(data)
@@ -57,8 +51,8 @@ Meteor.methods(
                 gg.graph(keyValSeparated).layer(gg.layer.bar().map('x','x').map('y','y')).opts(
                     width: Math.min(dataSize*60 + 100, 550)
                     height: "270"
+                    title: dataElement.name
                     "padding-right": "50"
-                    title: dataElement.titleName
                     "title-size":12
                     "legend-position":"bottom"
                 ).render(div)
