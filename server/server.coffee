@@ -35,24 +35,32 @@ Meteor.methods(
                 setTimeout callback, 1000
             )
     summarize_by_group: (obj) ->
-        #caching
-        [bambooID, group] = obj
-        cached = false
-        data =Datasets.find({id:bambooID}).fetch()[0]
-        if data.bummary
-            for item in data.bummary
-                if item[group]
-                    cached = true
-
-        if !(cached)
-            request.get(summaryURLf(bambooID, group), (e, b, response) ->
-                    obj = {}
-                    obj[group] = JSON.parse(response)
-                    Fiber(->
-                        Datasets.update({id: bambooID}, {$addToSet: {bummary: obj}})
+        # for [bambooID, groupkey], store set of objects that looks like
+        # {groupkey: groupkey, groupval: val_in_group, data: data, name: name, datasetID: datasetID}
+        [datasetID, groupkey] = obj
+        dataset =  Datasets.findOne(_id: datasetID)
+        return unless dataset
+        bambooID = dataset.id
+        if Datasets.findOne(datasetID: datasetID, groupkey: groupkey)
+            console.log "group splits for " + groupkey + " on dataset " + datasetID already cached
+        else
+            request.get(summaryURLf(bambooID, groupkey), (e, b, response) ->
+                    obj = JSON.parse(response) # a dict split by dict_val
+                    console.log(obj)
+                    console.log(_.map(_.keys(obj), (k) -> obj[k]))
+                    f = (key) -> (dataEl) -> 
+                            groupkey: groupkey
+                            groupval: key
+                            data: dataEl.data
+                            name: dataEl.name
+                            datasetID: datasetID
+                    res = _(obj).chain()
+                            .keys()
+                            .map((key) -> _.map(obj[key], f(key)))
+                            .flatten()
+                    Fiber( ->
+                        res.map((el) -> Datasets.insert el)
                     ).run()
             )
-        else
-            console.log bambooID + " on " + group + " is already logged"
 )
 

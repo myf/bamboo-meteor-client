@@ -21,7 +21,7 @@ if root.Meteor.is_client
     root.Template.navbar.events = "click button": ->
         url = $('#datasource-url').val()
         ###
-        #logic: separate cached and uncahced case for 
+        #logic: separate cached and uncached case for 
         #setTimeout beceause it does take time for bamboo
         #to populate the result into the database
         ###
