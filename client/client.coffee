@@ -9,9 +9,6 @@ if root.Meteor.is_client
         summary = dataset.summary
         name_list =_(summary["(ALL)"]).pluck("name")
 
-    
-
-
     root.Template.maincontent.columns = ->
         u = "http://formhub.org/education/forms/schooling_status_format_18Nov11/data.csv"
         console.log 'data count: ' + Datasets.find({url:u}).count()
@@ -39,7 +36,7 @@ if root.Meteor.is_client
 
 
 Meteor.methods(
-    make_chart: (obj) ->
+    make_single_chart: (obj) ->
         [div, dataElement] = obj
         #dataElement.titleName = makeTitle(dataElement.name)
         dataElement.titleName = "testing"
@@ -68,6 +65,6 @@ Meteor.methods(
         for item in item_list
             item_name = item["name"]
             div = "#"+item["name"]+".gg"
-            Meteor.call("make_chart",[div,item])
+            Meteor.call("make_single_chart",[div,item])
 
 )
