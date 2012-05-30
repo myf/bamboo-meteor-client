@@ -2,21 +2,23 @@ root = global ? window
 bambooUrl = "/"
 observationsUrl = bambooUrl + "datasets"
 
-default_url = 'http://localhost:8000/education/forms/schooling_status_format_18Nov11/data.csv'
+constants =
+    defaultURL : 'http://localhost:8000/education/forms/schooling_status_format_18Nov11/data.csv'
 
+############ UI LOGIC ############################
 if root.Meteor.is_client
     root.Template.navbar.events = "click button": ->
         url = $('#datasource-url').val()
-        dataset = Datasets.findOne(url: url)
-        if !dataset
+        Session.set('currentDatasetURL', url)
+        #TODO: put the following in a Meteor.subscribe section?
+        if !Datasets.findOne(url: url)
             console.log "caching server side.."
             Meteor.call('register_dataset', url)
         else
             console.log "already cached server side.."
-        Session.set('currentDatasetURL', url)
 
     root.Template.maincontent.columns = ->
-        url = Session.get('currentDatasetURL') ? default_url
+        url = Session.get('currentDatasetURL')
         console.log url
         datacursor = Summaries.find(datasetSourceURL: url, groupKey: '', groupVal: '(ALL)')
         if datacursor.count()
@@ -28,7 +30,13 @@ if root.Meteor.is_client
                 Meteor.call('register_dataset', url)
             console.log "nada"
             return ['Loading dataset...']
-        
+
+    Meteor.startup ->
+        Session.set('currentDatasetURL', constants.defaultURL)
+
+############# UI LIB #############################
+
+
 Meteor.methods(
     make_chart: (obj) ->
         [div, dataElement] = obj

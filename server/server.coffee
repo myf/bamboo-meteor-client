@@ -15,22 +15,22 @@ Meteor.methods(
                 uri: datasetsURL
                 method: 'POST'
                 form: {url: url}
-            request(post_options, (e, b, response) ->
+            request post_options, (e, b, response) ->
                 Fiber(->
                     Datasets.insert
                         bambooID: JSON.parse(response).id
                         url: url
                         cached_at: Date.now()
                 ).run()
-                summaryCallback = -> 
-                    Meteor.call('summarize_by_group', [url: ''])
+                summaryCallback = -> Fiber( ->
+                    Meteor.call('summarize_by_group', [url, ''])).run()
                 setTimeout summaryCallback, 1000
-
-            )
     summarize_by_group: (obj) ->
-        # tease out individual data elements from bamboo output, and store away
+        # tease out individual summary objects from bamboo output + store
         [datasetURL, groupkey] = obj
         dataset =  Datasets.findOne(url: datasetURL)
+        datasetID = dataset._id
+        bambooID = dataset.bambooID
         dataset console.log "dataset not found" unless dataset
         return unless dataset
         # TODO: should we do a stricter check?
@@ -38,10 +38,7 @@ Meteor.methods(
             console.log "already cached: group splits for " + groupkey + " on dataset " + datasetID
         else
             console.log "calculating: group splits for " + groupkey + " on dataset " + datasetID
-            dataset = Datasets.findOne("_id": datasetID)
-            bambooID = dataset.bambooID
-            datasourceURL = dataset.url
-            request.get(summaryURLf(bambooID, groupkey), (e, b, response) ->
+            request.get summaryURLf(bambooID, groupkey), (e, b, response) ->
                     obj = JSON.parse(response) # a dict split by dict_val
                     dataElToDbObj = (groupval) -> (dataEl) ->
                             groupKey: groupkey
@@ -49,12 +46,11 @@ Meteor.methods(
                             data: dataEl.data
                             name: dataEl.name
                             datasetID: datasetID
-                            datasetSourceURL: datasourceURL
+                            datasetSourceURL: datasetURL
                     res = _(obj).chain()
                             .keys()
                             .map((key) -> _.map(obj[key], dataElToDbObj(key)))
                             .flatten()
                     Fiber( -> res.each((el) -> Summaries.insert el))
                         .run()
-            )
 )
