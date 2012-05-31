@@ -3,7 +3,8 @@ bambooUrl = "/"
 observationsUrl = bambooUrl + "datasets"
 
 constants =
-    defaultURL : 'http://localhost:8000/education/forms/schooling_status_format_18Nov11/data.csv'
+    #defaultURL : 'http://localhost:8000/education/forms/schooling_status_format_18Nov11/data.csv'
+    defaultURL : 'http://formhub.org/education/forms/schooling_status_format_18Nov11/data.csv'
 
 ############ UI LOGIC ############################
 if root.Meteor.is_client
@@ -30,9 +31,11 @@ if root.Meteor.is_client
                 Meteor.call('register_dataset', url)
             console.log "nada"
             return ['Loading dataset...']
+    root.Template.navbar.default = constants.defaultURL
 
     Meteor.startup ->
         Session.set('currentDatasetURL', constants.defaultURL)
+    
 
 ############# UI LIB #############################
 
