@@ -31,7 +31,7 @@ if root.Meteor.is_client
                 Meteor.call('register_dataset', url)
             console.log "nada"
             return ['Loading dataset...']
-    root.Template.navbar.default = constants.defaultURL
+    root.Template.navbar.default =Session.get('currentDatasetURL') ? constants.defaultURL
 
     Meteor.startup ->
         Session.set('currentDatasetURL', constants.defaultURL)
@@ -44,7 +44,7 @@ Meteor.methods(
     make_single_chart: (obj) ->
         [div, dataElement] = obj
         #dataElement.titleName = makeTitle(dataElement.name)
-        dataElement.titleName = "testing"
+        dataElement.titleName = dataElement["name"]
         data = dataElement.data
         console.log data
         dataSize = _.size(data)
@@ -65,8 +65,11 @@ Meteor.methods(
                     "legend-position":"bottom"
                 ).render(div)
 
-    charting: (url) ->
-        item_list = Datasets.findOne({url:url}).summary["(ALL)"]
+    #TODO: making new charting that associates with a button for all charts
+    charting: ->
+        #item_list = Datasets.findOne({url:url}).summary["(ALL)"]
+        url = Session.get("currentDatasetURL")
+        item_list = Summaries.find(datasetSourceURL:url, groupKey:"").fetch()
         for item in item_list
             item_name = item["name"]
             div = "#"+item["name"]+".gg"

@@ -11,51 +11,42 @@
     </div>
     <div class="row">
     </div>
-    <div class="span3">
-        {{> sidebar}}
-    </div>
     <div class="span9">
         {{> maincontent}}
     </div>
+    <div class="span3">
+        {{> control}}
+    </div>
 </body>
+
+<template name="control">
+<ul>
+	<li>control panel</li>
+</ul>
+</template>
 
 <template name="navbar">
     <div class="navbar-inner">
         <div class="container">
             <a class="brand" href="#">Summarizr client for bamboo</a>
             <div class="pull-right">
-                <input id="datasource-url" type="text" name="url" size="100" value="{{default}}"/>
+                <input id="datasource-url" type="text" name="url" size="200" value="{{default}}"/>
                 <button class="btn" id="datasource-change-button" > Change </button>
             </div>
         </div>
     </div>
 </template>
 
-<template name="sidebar">
-    <!--
-    Group by: 
-            <select id="grouping-select" multiple="multiple"> </select> <br/>
-    -->
-
-    Histograms!
-            
-            <select id="histogram-select" multiple="multiple" style="height:300px;"> </select> <br/>
-    <!--
-            
-    Side-by-side:
-            <input type="checkbox" name="side-by-side" id="side-by-side" value="yes"> </input> <br/>
-    -->
-</template>
 
 <template name="maincontent">
-    <div id="column-list" class="accordion">
+    <div id="column-list" class="accordion span7">
         <ul>
         {{#each columns}}
             {{> column}}
         {{/each}}
         </ul>
     </div>
-    <div id="graphs"  class="container">
+    <div id="graphs"  class="container span7">
         <ul id="tabs" class="nav nav-tabs"></ul>
         <ul id="alt-tabs" class="row-fluid"></ul>
         <div id="content" class="tab-content"></div>

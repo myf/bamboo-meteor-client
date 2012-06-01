@@ -11,7 +11,7 @@ summaryURLf = (id,group) -> datasetsURL + '/' + id + '/summary' + if group then 
 Meteor.methods(
     register_dataset: (url) ->
         console.log "server received url: " + url
-        unless Datasets.findOne({url: url}) 
+        unless Datasets.findOne({url: url})
             post_options =
                 uri: datasetsURL
                 method: 'POST'
