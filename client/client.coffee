@@ -17,6 +17,8 @@ if root.Meteor.is_client
             Meteor.call('register_dataset', url)
         else
             console.log "already cached server side.."
+    root.Template.control.events = "click button": ->
+        Meteor.call("charting")
 
     root.Template.maincontent.columns = ->
         url = Session.get('currentDatasetURL')
@@ -65,7 +67,6 @@ Meteor.methods(
                     "legend-position":"bottom"
                 ).render(div)
 
-    #TODO: making new charting that associates with a button for all charts
     charting: ->
         #item_list = Datasets.findOne({url:url}).summary["(ALL)"]
         url = Session.get("currentDatasetURL")

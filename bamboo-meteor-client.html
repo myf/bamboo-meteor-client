@@ -22,6 +22,7 @@
 <template name="control">
 <ul>
 	<li>control panel</li>
+    <button class="btn" id="charting-button" > chart </button>
 </ul>
 </template>
 
@@ -54,13 +55,12 @@
 </template>
 
 <template name="column">
-<div class="accordion-group">
-    <div class="accordion-heading">
-        <a class="accordion-toggle" href="#{{this}}" data-toggle="collapse" data-target="#{{this}}">{{this}}</a>
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle" href="#{{this}}" data-toggle="collapse" data-target="#{{this}}">{{this}}</a>
+        </div>
+        <div class="accordion-body collapse" id="{{this}}">
+            <div class="gg_graph" id="{{this}}.gg"></div>
+        </div>
     </div>
-    <div class="accordion-body collapse" id="{{this}}">
-        <div class="gg_graph" id="{{this}}.gg"></div>
-    </div>
-</div>
-
 </template>
