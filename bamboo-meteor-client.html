@@ -23,7 +23,17 @@
 <ul>
 	<li>control panel</li>
     <button class="btn" id="charting-button" > chart </button>
+    =======================
+    {{#each groups}}
+        {{> group}}
+    {{/each}}
 </ul>
+</template>
+<template name="group">
+<li>
+    <button class="btn" id="{{this}}" > {{this}}</button>
+</li>
+
 </template>
 
 <template name="navbar">

@@ -10,22 +10,25 @@ summaryURLf = (id,group) -> datasetsURL + '/' + id + '/summary' + if group then 
 #Note: methods can live anywhere, regardless of server or client
 Meteor.methods(
     register_dataset: (url) ->
-        console.log "server received url: " + url
-        unless Datasets.findOne({url: url})
-            post_options =
-                uri: datasetsURL
-                method: 'POST'
-                form: {url: url}
-            request post_options, (e, b, response) ->
-                Fiber(->
-                    Datasets.insert
-                        bambooID: JSON.parse(response).id
-                        url: url
-                        cached_at: Date.now()
-                ).run()
-                summaryCallback = -> Fiber( ->
-                    Meteor.call('summarize_by_group', [url, ''])).run()
-                setTimeout summaryCallback, 1000
+        if url is null
+            console.log "null url! discard!"
+        else
+            console.log "server received url " + url
+            unless Datasets.findOne({url: url})
+                post_options =
+                    uri: datasetsURL
+                    method: 'POST'
+                    form: {url: url}
+                request post_options, (e, b, response) ->
+                    Fiber(->
+                        Datasets.insert
+                            bambooID: JSON.parse(response).id
+                            url: url
+                            cached_at: Date.now()
+                    ).run()
+                    summaryCallback = -> Fiber( ->
+                        Meteor.call('summarize_by_group', [url, ''])).run()
+                    setTimeout summaryCallback, 1000
     summarize_by_group: (obj) ->
         # tease out individual summary objects from bamboo output + store
         [datasetURL, groupkey] = obj

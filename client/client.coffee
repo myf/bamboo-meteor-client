@@ -12,6 +12,7 @@ if root.Meteor.is_client
         url = $('#datasource-url').val()
         Session.set('currentDatasetURL', url)
         #TODO: put the following in a Meteor.subscribe section?
+        #TODO: eliminates null url from being registered into db
         if !Datasets.findOne(url: url)
             console.log "caching server side.."
             Meteor.call('register_dataset', url)
@@ -19,6 +20,17 @@ if root.Meteor.is_client
             console.log "already cached server side.."
     root.Template.control.events = "click button": ->
         Meteor.call("charting")
+    root.Template.control.groups = ->
+        url = Session.get('currentDatasetURL')
+        datacursor = Summaries.find(datasetSourceURL: url, groupKey: '', groupVal: '(ALL)')
+        _(datacursor.fetch()).pluck("name")
+    root.Template.group.events = "click button": ->
+       group = this
+       url = Session.get('currentDatasetURL')
+       Meteor.call("summarize_by_group",[url,group])
+
+        
+
 
     root.Template.maincontent.columns = ->
         url = Session.get('currentDatasetURL')
@@ -37,6 +49,7 @@ if root.Meteor.is_client
 
     Meteor.startup ->
         Session.set('currentDatasetURL', constants.defaultURL)
+        Session.set('currentGroup', '')
     
 
 ############# UI LIB #############################
