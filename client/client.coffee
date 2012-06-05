@@ -20,7 +20,7 @@ if root.Meteor.is_client
             console.log "already cached server side.."
 
     root.Template.control.events = "click button": ->
-        Meteor.call("better_charting")
+        Meteor.call("charting")
 
     root.Template.control.groups = ->
         url = Session.get('currentDatasetURL')
@@ -83,23 +83,12 @@ Meteor.methods(
                     "legend-position":"bottom"
                 ).render(div)
 
-    charting: ->
-        #item_list = Datasets.findOne({url:url}).summary["(ALL)"]
-        Meteor.call('clear_graphs')
-        url = Session.get("currentDatasetURL")
-        group = Session.get("groupKey") ? "" #some fallback
-        item_list = Summaries.find(datasetSourceURL:url, groupKey:"").fetch()
-        for item in item_list
-            item_name = item["name"]
-            div = "#"+item["name"]+".gg"
-            Meteor.call("make_single_chart",[div,item])
-
     clear_graphs: ->
         graph_divs = $('.gg_graph')
         for item in graph_divs
             $(item).empty()
 
-    better_charting: ->
+    charting: ->
         Meteor.call('clear_graphs')
         url = Session.get("currentDatasetURL")
         group = Session.get("currentGroup") ? "" #some fallback

@@ -4,8 +4,8 @@
 </head>
 
 <body>
-    <div class="container-fluid" style="margin-top:50px">
-        <div class="navbar navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar navbar-fixed-bottom">
             {{> navbar}}
         </div>
     </div>
@@ -25,10 +25,12 @@
     summary:
     <button class="btn" id="charting-button" > chart </button>
     =======================
-    group by:
-    {{#each groups}}
-        {{> group}}
-    {{/each}}
+    <div id="group_by">
+        group by:
+        {{#each groups}}
+            {{> group}}
+        {{/each}}
+    </div>
 </ul>
 </template>
 <template name="group">
@@ -42,7 +44,7 @@
         <div class="container">
             <a class="brand" href="#">Summarizr client for bamboo</a>
             <div class="pull-right">
-                <input id="datasource-url" type="text" name="url" size="200" value="{{default}}"/>
+                <input id="datasource-url" type="text" name="url" SIZE="200" value="{{default}}"/>
                 <button class="btn" id="datasource-change-button" > Change </button>
             </div>
         </div>
