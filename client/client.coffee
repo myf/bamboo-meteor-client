@@ -30,6 +30,7 @@ if root.Meteor.is_client
 
     root.Template.group.events = "click button": ->
        group = this
+       Session.set('currentGroup',group)
        url = Session.get('currentDatasetURL')
        Meteor.call("summarize_by_group",[url,group])
 
@@ -61,7 +62,7 @@ Meteor.methods(
     make_single_chart: (obj) ->
         [div, dataElement] = obj
         #dataElement.titleName = makeTitle(dataElement.name)
-        dataElement.titleName = dataElement["name"]
+        dataElement.titleName = dataElement["groupVal"]
         data = dataElement.data
         console.log data
         dataSize = _.size(data)
@@ -74,7 +75,7 @@ Meteor.methods(
                 #if number make pure histogram
                 #histogram logic
                 gg.graph(keyValSeparated).layer(gg.layer.bar().map('x','x').map('y','y')).opts(
-                    width: Math.min(dataSize*60 + 100, 550)
+                    width: Math.min(dataSize*60 + 100, 220)
                     height: "270"
                     "padding-right": "50"
                     title: dataElement.titleName
@@ -116,8 +117,6 @@ Meteor.methods(
         #group_list = _list.pluck("groupVal")
         #group_list = (list.map (x)->x.groupVal).unique()
         group_list = list.map (x)->x.groupVal
-        alert list.length
-        alert group_list.length
         for item in group_list
             fin[item]=[]
         for item in list
