@@ -5,6 +5,8 @@ observationsUrl = bambooUrl + "datasets"
 constants =
     #defaultURL : 'http://localhost:8000/education/forms/schooling_status_format_18Nov11/data.csv'
     defaultURL : 'http://formhub.org/education/forms/schooling_status_format_18Nov11/data.csv'
+    #defaultURL : 'http://formhub.org/mberg/forms/good_eats/data.csv'
+
 
 ############ UI LOGIC ############################
 if root.Meteor.is_client
@@ -25,8 +27,12 @@ if root.Meteor.is_client
     root.Template.control.groups = ->
         url = Session.get('currentDatasetURL')
         group = Session.get('currentGroup')
-        datacursor = Summaries.find(datasetSourceURL: url, groupKey: group, groupVal: '(ALL)')
+        datacursor = Summaries.find
+            datasetSourceURL: url
+            groupKey: group
+            groupVal: '(ALL)'
         _(datacursor.fetch()).pluck("name")
+        #TODO: pluck -> coffeescript
 
     root.Template.group.events = "click button": ->
        group = this
@@ -37,7 +43,10 @@ if root.Meteor.is_client
     root.Template.maincontent.columns = ->
         url = Session.get('currentDatasetURL')
         console.log url
-        datacursor = Summaries.find(datasetSourceURL: url, groupKey: "", groupVal: '(ALL)')
+        datacursor = Summaries.find
+            datasetSourceURL: url
+            groupKey: ""
+            groupVal: '(ALL)'
         if datacursor.count()
             console.log "data found: "
             return _(datacursor.fetch()).pluck("name")
@@ -96,9 +105,23 @@ Meteor.methods(
         list = Meteor.call('grouping', item_list)
         $.each(list, (key,value)->
             for item in value
-                item_name = item["name"]
                 div = "#"+item["name"]+".gg"
                 Meteor.call("make_single_chart",[div,item])
+        )
+    field_charting:(field) ->
+        Meteor.call('clear_graphs')
+        url = Session.get("currentDatasetURL")
+        group = Session.get("currentGroup") ? "" #some fallback
+        item_list = Summaries.find
+            datasetSourceURL:url
+            groupKey:group
+        .fetch()
+        list = Meteor.call('grouping', item_list)
+        $.each(list, (key,value)->
+            for item in value
+                if item['name']==field
+                    div = "#"+field+".gg"
+                    Meteor.call("make_single_chart",[div,item])
         )
 
     grouping: (list) ->

@@ -1,9 +1,9 @@
 root = global ? window
-
 require = __meteor_bootstrap__.require
-request = require('request')
+request = require 'request'
 #bambooURL = 'http://localhost:8080'
-bambooURL = 'http://bamboo.modilabs.org/'
+#bambooURL = 'http://bamboo.modilabs.org/'
+bambooURL = 'http://bamboo.io/'
 datasetsURL = bambooURL + '/datasets'
 summaryURLf = (id,group) -> datasetsURL + '/' + id + '/summary' + if group then '?group=' + group else ''
 
