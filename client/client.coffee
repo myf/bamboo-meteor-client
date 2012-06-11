@@ -31,8 +31,9 @@ if root.Meteor.is_client
             datasetSourceURL: url
             groupKey: group
             groupVal: '(ALL)'
-        _(datacursor.fetch()).pluck("name")
-        #TODO: pluck -> coffeescript
+            #_(datacursor.fetch()).pluck("name")
+        #pass down to handlebar
+        names = data['name'] for data in datacursor.fetch()
 
     root.Template.group.events = "click button": ->
        group = this
