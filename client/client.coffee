@@ -57,6 +57,7 @@ if root.Meteor.is_client
             console.log "nada"
             return ['Loading dataset...']
 
+    #getting url
     root.Template.navbar.default =Session.get('currentDatasetURL') ? constants.defaultURL
 
     Meteor.startup ->
@@ -135,6 +136,11 @@ Meteor.methods(
            group = item['groupVal']
            fin[group].push(item)
         fin
+
+    #testing only
+    alert: (something)->
+        display = something ? "here here"
+        alert display
 
 )
 Array::unique = ->
