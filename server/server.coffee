@@ -43,18 +43,18 @@ Meteor.methods(
         else
             console.log "calculating: group splits for " + groupkey + " on dataset " + datasetID
             request.get summaryURLf(bambooID, groupkey), (e, b, response) ->
-                    obj = JSON.parse(response) # a dict split by dict_val
-                    dataElToDbObj = (groupval) -> (dataEl) ->
-                            groupKey: groupkey
-                            groupVal: groupval
-                            data: dataEl.data
-                            name: dataEl.name
-                            datasetID: datasetID
-                            datasetSourceURL: datasetURL
-                    res = _(obj).chain()
-                            .keys()
-                            .map((key) -> _.map(obj[key], dataElToDbObj(key)))
-                            .flatten()
-                    Fiber( -> res.each((el) -> Summaries.insert el))
-                        .run()
+                obj = JSON.parse(response) # a dict split by dict_val
+                dataElToDbObj = (groupval) -> (dataEl) ->
+                        groupKey: groupkey
+                        groupVal: groupval
+                        data: dataEl.data
+                        name: dataEl.name
+                        datasetID: datasetID
+                        datasetSourceURL: datasetURL
+                res = _(obj).chain()
+                        .keys()
+                        .map((key) -> _.map(obj[key], dataElToDbObj(key)))
+                        .flatten()
+                Fiber( -> res.each((el) -> Summaries.insert el))
+                    .run()
 )
