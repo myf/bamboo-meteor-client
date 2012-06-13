@@ -3,8 +3,8 @@ bambooUrl = "/"
 observationsUrl = bambooUrl + "datasets"
 
 constants =
-    #defaultURL : 'http://localhost:8000/education/forms/schooling_status_format_18Nov11/data.csv'
     defaultURL : 'http://formhub.org/education/forms/schooling_status_format_18Nov11/data.csv'
+    #defaultURL : 'http://localhost:8000/education/forms/schooling_status_format_18Nov11/data.csv'
     #defaultURL : 'http://formhub.org/mberg/forms/good_eats/data.csv'
 
 
@@ -25,15 +25,8 @@ if root.Meteor.is_client
         Meteor.call("charting")
 
     root.Template.control.groups = ->
-        url = Session.get('currentDatasetURL')
-        group = Session.get('currentGroup')
-        datacursor = Summaries.find
-            datasetSourceURL: url
-            groupKey: group
-            groupVal: '(ALL)'
-            #_(datacursor.fetch()).pluck("name")
-        #pass down to handlebar
-        names = data['name'] for data in datacursor.fetch()
+        names = Session.get('fields')
+        #TODO: filter ungroupable stuff out of fields
 
     root.Template.group.events = "click button": ->
        group = this
@@ -41,22 +34,11 @@ if root.Meteor.is_client
        url = Session.get('currentDatasetURL')
        Meteor.call("summarize_by_group",[url,group])
 
-    root.Template.maincontent.columns = ->
-        url = Session.get('currentDatasetURL')
-        console.log url
-        datacursor = Summaries.find
-            datasetSourceURL: url
-            groupKey: ""
-            groupVal: '(ALL)'
-        if datacursor.count()
-            console.log "data found: "
-            return _(datacursor.fetch()).pluck("name")
-        else
-            dataset = Datasets.findOne(url: url)
-            if (!dataset)
-                Meteor.call('register_dataset', url)
-            console.log "nada"
-            return ['Loading dataset...']
+    root.Template.maincontent.fields = ->
+        Meteor.call("get_fields",Session.get('currentDatasetURL'))
+        fields = Session.get('fields')
+        return fields
+
 
     #getting url
     root.Template.navbar.default =Session.get('currentDatasetURL') ? constants.defaultURL
@@ -64,6 +46,8 @@ if root.Meteor.is_client
     Meteor.startup ->
         Session.set('currentDatasetURL', constants.defaultURL)
         Session.set('currentGroup', '')
+        Meteor.call("get_fields",Session.get('currentDatasetURL'))
+       
     
 
 ############# UI LIB #############################
@@ -75,7 +59,6 @@ Meteor.methods(
         #dataElement.titleName = makeTitle(dataElement.name)
         dataElement.titleName = dataElement["groupVal"]
         data = dataElement.data
-        console.log data
         dataSize = _.size(data)
 
         unless (dataSize is 0) or (dataElement.name.charAt(0) is '_')
@@ -138,6 +121,24 @@ Meteor.methods(
            fin[group].push(item)
         fin
 
+    get_fields:(url)->
+        fin = []
+        datacursor = Summaries.find
+            datasetSourceURL: url
+            groupKey: ""
+            groupVal: '(ALL)'
+        if datacursor.count()
+            console.log "data found: "
+            names = []
+            for data in datacursor.fetch()
+                names.push(data['name'])
+            #fields is an array []
+            fin = names
+        else
+            dataset = Datasets.findOne(url: url)
+            if (!dataset)
+                Meteor.call('register_dataset', url)
+        Session.set('fields', fin)
     #testing only
     alert: (something)->
         display = something ? "here here"
