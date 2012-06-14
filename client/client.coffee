@@ -50,11 +50,6 @@ if root.Meteor.is_client
     #getting url
     root.Template.navbar.default =Session.get('currentDatasetURL') ? constants.defaultURL
 
-    Meteor.startup ->
-        Session.set('currentDatasetURL', constants.defaultURL)
-        Session.set('currentGroup', '')
-        Meteor.call('register_dataset',Session.get('currentDatasetURL'))
-        Meteor.call("get_fields",Session.get('currentDatasetURL'))
         
        
     

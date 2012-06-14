@@ -46,7 +46,7 @@ Meteor.methods(
             datasetID = dataset._id
             bambooID = dataset.bambooID
             if Summaries.findOne(datasetID: datasetID,groupKey: groupkey)
-                console.log("summary with datasetID "+datasetID+" and groupkey "+groupkey+" exists")
+                console.log("summary with datasetID "+datasetID+" and groupkey "+groupkey+" is already cached")
             else
                 request.get(summaryURLf(bambooID, groupkey), (error,body,response) ->
                     if error
@@ -64,10 +64,10 @@ Meteor.methods(
                                    datasetSourceURL: datasetURL 
                                Fiber( -> Summaries.insert res).run()
                         else
-                            for group_by of obj
-                                if group_by is "error"
-                                    Meteor.call("alert",obj[group_by])
-                                else
+                            if obj["error"]
+                                console.log "error on group_by: "+obj['error']
+                            else
+                                for group_by of obj
                                     for groupval of obj[group_by]
                                         for field of obj[group_by][groupval]
                                             res=
