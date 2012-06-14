@@ -3,7 +3,8 @@ bambooUrl = "/"
 observationsUrl = bambooUrl + "datasets"
 
 constants =
-    defaultURL : 'http://formhub.org/education/forms/schooling_status_format_18Nov11/data.csv'
+    #defaultURL : 'http://formhub.org/education/forms/schooling_status_format_18Nov11/data.csv'
+    defaultURL : 'https://www.dropbox.com/s/0m8smn04oti92gr/sample_dataset_school_survey.csv?dl=1'
     #defaultURL : 'http://localhost:8000/education/forms/schooling_status_format_18Nov11/data.csv'
     #defaultURL : 'http://formhub.org/mberg/forms/good_eats/data.csv'
 
@@ -52,6 +53,7 @@ if root.Meteor.is_client
     Meteor.startup ->
         Session.set('currentDatasetURL', constants.defaultURL)
         Session.set('currentGroup', '')
+        Meteor.call('register_dataset',Session.get('currentDatasetURL'))
         Meteor.call("get_fields",Session.get('currentDatasetURL'))
         
        
@@ -144,7 +146,7 @@ Meteor.methods(
         datacursor = Summaries.find
             datasetSourceURL: url
             groupKey: ""
-            groupVal: '(ALL)'
+            groupVal: ""
         if datacursor.count()
             console.log "data found: "
             names = []
