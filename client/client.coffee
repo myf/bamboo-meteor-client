@@ -29,15 +29,21 @@ if root.Meteor.is_client
         #TODO: filter ungroupable stuff out of fields
 
     root.Template.group.events = "click button": ->
-       group = this
-       Session.set('currentGroup',group)
-       url = Session.get('currentDatasetURL')
-       Meteor.call("summarize_by_group",[url,group])
+        group = ""+this
+        Session.set('currentGroup',group)
+        url = Session.get('currentDatasetURL')
+        Meteor.call("summarize_by_group",[url,group])
 
     root.Template.maincontent.fields = ->
         Meteor.call("get_fields",Session.get('currentDatasetURL'))
         fields = Session.get('fields')
-        return fields
+        Meteor.call('generate_visible_fields', fields)
+        visible_fields = Session.get('visible_fields')
+        console.log visible_fields
+        display = []
+        for item in visible_fields
+            display.push(item['field'])
+        display
 
 
     #getting url
@@ -47,6 +53,7 @@ if root.Meteor.is_client
         Session.set('currentDatasetURL', constants.defaultURL)
         Session.set('currentGroup', '')
         Meteor.call("get_fields",Session.get('currentDatasetURL'))
+        
        
     
 
@@ -54,6 +61,17 @@ if root.Meteor.is_client
 
 
 Meteor.methods(
+    generate_visible_fields: (fields)->
+        group_by = Session.get('currentGroup')
+        console.log typeof group_by
+        visible_fields = []
+        for item in fields
+            obj=
+                field: item
+                group_by: group_by
+            visible_fields.push(obj)
+        Session.set("visible_fields",visible_fields)
+
     make_single_chart: (obj) ->
         [div, dataElement] = obj
         #dataElement.titleName = makeTitle(dataElement.name)
