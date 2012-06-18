@@ -28,7 +28,7 @@ Currently it is deployed at
 http://bamboo.meteor.com
 
 Please check this testing site for the newest deployment before we migrate it to bamboo site
-
+>
  _          _ _       
 | |__   ___| | | ___  
 | '_ \ / _ \ | |/ _ \ 
