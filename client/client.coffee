@@ -26,7 +26,7 @@ if root.Meteor.is_client
         Meteor.call("charting")
 
     root.Template.control.groups = ->
-        names = Session.get('fields')
+        fields = Session.get('fields')
         #TODO: filter ungroupable stuff out of fields
 
     root.Template.group.events = "click button": ->
@@ -40,7 +40,6 @@ if root.Meteor.is_client
         fields = Session.get('fields')
         Meteor.call('generate_visible_fields', fields)
         visible_fields = Session.get('visible_fields')
-        console.log visible_fields
         display = []
         for item in visible_fields
             display.push(item['field'])
@@ -60,7 +59,6 @@ if root.Meteor.is_client
 Meteor.methods(
     generate_visible_fields: (fields)->
         group_by = Session.get('currentGroup')
-        console.log typeof group_by
         visible_fields = []
         for item in fields
             obj=
