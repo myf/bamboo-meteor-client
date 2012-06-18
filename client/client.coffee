@@ -101,7 +101,7 @@ Meteor.methods(
         Meteor.call('clear_graphs')
         url = Session.get("currentDatasetURL")
         group = Session.get("currentGroup") ? "" #some fallback
-        item_list = Summaries.find(datasetSourceURL:url, groupKey:group).fetch()
+        item_list = Summaries.find(datasetURL:url, groupKey:group).fetch()
         list = Meteor.call('grouping', item_list)
         $.each(list, (key,value)->
             for item in value
@@ -113,7 +113,7 @@ Meteor.methods(
         url = Session.get("currentDatasetURL")
         group = Session.get("currentGroup") ? "" #some fallback
         item_list = Summaries.find
-            datasetSourceURL:url
+            datasetURL:url
             groupKey:group
         .fetch()
         list = Meteor.call('grouping', item_list)
@@ -138,15 +138,14 @@ Meteor.methods(
 
     get_fields:(url)->
         fin = []
-        datacursor = Summaries.find
-            datasetSourceURL: url
-            groupKey: ""
-            groupVal: ""
-        if datacursor.count()
+        dataset = Schemas.findOne
+            datasetURL: url
+        if dataset
             console.log "data found: "
             names = []
-            for data in datacursor.fetch()
-                names.push(data['name'])
+            schema = dataset['schema']
+            for name of schema
+                names.push(name)
             #fields is an array []
             fin = names
         else

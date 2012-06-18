@@ -6,6 +6,7 @@ request = require 'request'
 bambooURL = 'http://bamboo.io/'
 datasetsURL = bambooURL + '/datasets'
 summaryURLf = (id,group) -> datasetsURL + '/' + id + '/summary' + if group then '?group=' + group else ''
+schemaURLf = (id) -> datasetsURL + '/' + id + '/info'
 
 #Note: methods can live anywhere, regardless of server or client
 Meteor.methods(
@@ -26,15 +27,44 @@ Meteor.methods(
                                 bambooID: JSON.parse(response).id
                                 url: url
                                 cached_at: Date.now()
-                            Meteor.setTimeout (->
-                                Meteor.call('summarize_by_group', [url, ''])
-                            ), 1000
+                                #Meteor.setTimeout (->
+                                #Meteor.call('summarize_by_group', [url, ''])
+                            Meteor.call('insert_schema', url)
+                                #), 1000
                     ).run()
                     ###    
                     summaryCallback = -> Fiber( ->
                         Meteor.call('summarize_by_group', [url, ''])).run()
                     setTimeout summaryCallback, 1000
                     ###
+
+    insert_schema: (datasetURL) ->
+        dataset = Datasets.findOne(url: datasetURL)
+        if !(dataset)
+            console.log "no dataset yet, get your schema dataset first"
+        else
+            datasetID = dataset._id
+            bambooID = dataset.bambooID
+            #TODO: not sure about the updated time or created time
+            if Schemas.findOne(datasetID: datasetID)
+                console.log("schema with datasetID " + datasetID + " and bambooID " + bambooID + " is already cached")
+            else
+                request.get(schemaURLf(bambooID), (error, body, response) ->
+                    if error
+                        console.log error
+                    else
+                        obj = JSON.parse(response)
+                        updateTime = obj['updated_at']
+                        createTime = obj['created_at']
+                        schema = obj['schema']
+                        res =
+                            updateTime : updateTime
+                            createTime : createTime
+                            schema : schema
+                            datasetID : datasetID
+                            datasetURL : datasetURL
+                        Fiber( -> Schemas.insert res).run()
+                )
 
     summarize_by_group: (obj) ->
         # tease out individual summary objects from bamboo output + store
@@ -62,7 +92,7 @@ Meteor.methods(
                                     data: obj[field]["summary"]
                                     name:field
                                     datasetID: datasetID
-                                    datasetSourceURL: datasetURL
+                                    datasetURL: datasetURL
                                 Fiber( -> Summaries.insert res).run()
                         else
                             if obj["error"]
@@ -77,7 +107,7 @@ Meteor.methods(
                                                 data: obj[group_by][groupval][field]["summary"]
                                                 name:field
                                                 datasetID: datasetID
-                                                datasetSourceURL: datasetURL
+                                                datasetURL: datasetURL
                                             Fiber( -> Summaries.insert res).run()
                 )
 )

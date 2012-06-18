@@ -6,7 +6,7 @@ Meteor.startup ->
     if root.Meteor.is_client
         Session.set('currentDatasetURL', constants.defaultURL)
         Session.set('currentGroup', '')
-        Meteor.call("get_fields",Session.get('currentDatasetURL'))
         Meteor.call('register_dataset',Session.get('currentDatasetURL'))
+        Meteor.call("get_fields",Session.get('currentDatasetURL'))
 
 
