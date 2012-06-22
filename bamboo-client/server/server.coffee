@@ -76,8 +76,7 @@ Meteor.methods(
                 console.log("summary with datasetID " + datasetID +
                     " and groupkey " + groupkey + " is already cached")
             else
-                request.get(summaryURLf(bambooID, groupkey), (error, body,
-                        response) ->
+                request.get(summaryURLf(bambooID, groupkey), (error, body, response) ->
                     if error
                         console.log error
                     else
