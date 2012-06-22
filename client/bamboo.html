@@ -1,0 +1,71 @@
+<head>
+	<meta charset="UTF-8">
+	<title>bamboo meteor client the awesomest of all</title>
+</head>
+<body>
+    <div class="container-fluid">
+        {{> url_entry}}
+    </div>
+        <div class="control">
+            {{> control_panel}}
+        </div>
+        <div class="graphing">
+        </div>
+</body>
+            
+
+<template name="url_entry">
+    {{#if exist}}
+    <!--moving up-->
+    <div class='navbar navbar-fixed-top url'>
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="pull-right">
+                    <input id="dataSourceURL" type="text" value="{{exist}}"></input>
+                    <div class="btn" id="submitURL">
+                        Submit
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {{else}} 
+    <div class = 'logo_bamboo'>
+    </div>   
+    <div class ='url_init'>
+        <input id="dataSourceURL" type="text"></input>
+        <div class="btn" id="submitURL">
+            Submit        
+        </div>
+    </div>
+    {{/if}}    
+</template>
+
+<template name="control_panel">
+    {{#if show}}
+        <div class='span8 offset2'>
+            <div class="page-header">
+                <h3>Control Panel</h3>
+            </div>
+            <div class="row offset1">
+                View
+                {{chosen}}
+                <select class="chosen" id="view">
+                    {{#each fields}}
+                        <option>{{this}}</option>
+                    {{/each}}
+                </select>
+                Group by
+                <select class="chosen" id="group-by">
+                    {{#each groups}}
+                        <option>{{this}}</option>
+                    {{/each}}
+                </select>
+                Generate
+                {{num_graph}}
+                graphs
+            </div>
+        </div>    
+    {{/if}}
+</template>

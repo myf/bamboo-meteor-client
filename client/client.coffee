@@ -11,6 +11,7 @@ constants =
 
 ############ UI LOGIC ############################
 if root.Meteor.is_client
+    ###
     root.Template.navbar.events = "click button": ->
         url = $('#datasource-url').val()
         Session.set('currentDatasetURL', url)
@@ -46,10 +47,53 @@ if root.Meteor.is_client
         display
 
 
-    #getting url
-    root.Template.navbar.default =Session.get('currentDatasetURL') ? constants.defaultURL
+    ###
+    
+    ###
+    ##getting url
+    root.Template.url-entry.default =Session.get('currentDatasetURL') ? constants.defaultURL
+    ###
 
-        
+
+    
+    #every function can be accessed by the template it is defined under
+    root.Template.url_entry.events = "click .btn": ->
+        url = $('#dataSourceURL').val()
+        Session.set('currentDatasetURL', url)
+        #Meteor.call('chosen')
+        if !Datasets.findOne(url: url)
+            console.log "caching server side.."
+            Meteor.call('register_dataset', url)
+        else
+            console.log "already cached server side.."
+    
+    root.Template.url_entry.exist = ->
+        Session.get('currentDatasetURL')
+
+    root.Template.control_panel.show = ->
+        #if there is currentDatasetURL in session-> show
+        Session.get('currentDatasetURL')
+
+    #have to write this code to make chosen recognized in jquery
+    root.Template.control_panel.chosen= ->
+        Meteor.defer(-> $('.chosen').chosen())
+
+    root.Template.control_panel.fields= ->
+        Meteor.call("get_fields",Session.get('currentDatasetURL'))
+        fields = Session.get('fields')
+        Meteor.call('generate_visible_fields', fields)
+        visible_fields = Session.get('visible_fields')
+        display = []
+        for item in visible_fields
+            display.push(item['field'])
+        display
+
+    root.Template.control_panel.groups= ->
+        fields = Session.get('fields')
+
+    root.Template.control_panel.num_graph= ->
+        20
+    
        
     
 
@@ -57,6 +101,12 @@ if root.Meteor.is_client
 
 
 Meteor.methods(
+    chosen: ->
+        alert 'some shit'
+        $(document).ready(->
+            $(".chosen").chosen()
+        )
+
     generate_visible_fields: (fields)->
         group_by = Session.get('currentGroup')
         visible_fields = []
