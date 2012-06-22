@@ -6,7 +6,7 @@
     "version": "0.0.1",
     "devDependencies": {
         "mocha": "1.2.x",
-        "coffee-script": "1.2.x"
+        "coffee-script": "1.2.x",
         "should": "0.6.x"
     }
 }
