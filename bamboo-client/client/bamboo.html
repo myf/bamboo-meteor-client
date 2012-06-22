@@ -10,6 +10,7 @@
             {{> control_panel}}
         </div>
         <div class="graphing">
+            {{> graph}}
         </div>
 </body>
             
@@ -66,6 +67,14 @@
                 {{num_graph}}
                 graphs
             </div>
+            <div class="btn pull-right" id="chartBtn">
+                Chart        
+            </div>
         </div>    
     {{/if}}
 </template>
+<template name="graph">
+</template>
+<!--
+<div class="gg_graph" id="{{this}}.gg"></div>
+-->

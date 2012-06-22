@@ -89,12 +89,16 @@ if root.Meteor.is_client
         display
 
     root.Template.control_panel.groups= ->
+        #call summarize_by_group
         fields = Session.get('fields')
 
     root.Template.control_panel.num_graph= ->
         20
     
-       
+    root.Template.control_panel.events= "click .btn": ->
+        group = $('#group-by').val()
+        url = Session.get('currentDatasetURL')
+        Meteor.call("summarize_by_group",[url,group])
     
 
 ############# UI LIB #############################
