@@ -64,6 +64,7 @@ if root.Meteor.is_client
         if !Datasets.findOne(url: url)
             console.log "caching server side.."
             Meteor.call('register_dataset', url)
+            Meteor.call('summarize_by_group',[url,''])
         else
             console.log "already cached server side.."
     
@@ -76,7 +77,10 @@ if root.Meteor.is_client
 
     #have to write this code to make chosen recognized in jquery
     root.Template.control_panel.chosen= ->
-        Meteor.defer(-> $('.chosen').chosen())
+        #Meteor.defer(-> $('.chosen').chosen())
+        Meteor.defer(->
+            Meteor.call('chosen')
+        )
 
     root.Template.control_panel.fields= ->
         Meteor.call("get_fields",Session.get('currentDatasetURL'))
@@ -97,8 +101,27 @@ if root.Meteor.is_client
     
     root.Template.control_panel.events= "click .btn": ->
         group = $('#group-by').val()
+        view_field = $('#view').val()
         url = Session.get('currentDatasetURL')
         Meteor.call("summarize_by_group",[url,group])
+        Session.set('currentGroup', group)
+        Session.set('currentView', view_field)
+
+    root.Template.graph.show=->
+        url = Session.get('currentDatasetURL')
+        group = Session.get('currentGroup')
+        view = Session.get('currentView')
+        url and view
+
+    root.Template.graph.field =->
+        div = Session.get('currentView')
+    
+    root.Template.graph.charting =->
+        Meteor.defer(->
+            Meteor.call('field_charting')
+        )
+    
+
     
 
 ############# UI LIB #############################
@@ -106,10 +129,10 @@ if root.Meteor.is_client
 
 Meteor.methods(
     chosen: ->
-        alert 'some shit'
-        $(document).ready(->
-            $(".chosen").chosen()
-        )
+            $(".chosen").chosen(
+                no_results_text: "No Result Matched"
+                allow_single_deselect: true
+            )
 
     generate_visible_fields: (fields)->
         group_by = Session.get('currentGroup')
@@ -143,6 +166,8 @@ Meteor.methods(
                     "title-size":12
                     "legend-position":"bottom"
                 ).render(div)
+    d3testing: ->
+        d3chart(mock_element)
 
     clear_graphs: ->
         graph_divs = $('.gg_graph')
@@ -160,21 +185,19 @@ Meteor.methods(
                 div = "#"+item["name"]+".gg"
                 Meteor.call("make_single_chart",[div,item])
         )
-    field_charting:(field) ->
+    field_charting: ->
         Meteor.call('clear_graphs')
         url = Session.get("currentDatasetURL")
         group = Session.get("currentGroup") ? "" #some fallback
+        field =Session.get("currentView")
         item_list = Summaries.find
             datasetURL:url
             groupKey:group
+            name:field
         .fetch()
-        list = Meteor.call('grouping', item_list)
-        $.each(list, (key,value)->
-            for item in value
-                if item['name']==field
-                    div = "#"+field+".gg"
-                    Meteor.call("make_single_chart",[div,item])
-        )
+        div = "#"+field+".gg"
+        for item in item_list
+            Meteor.call("make_single_chart",[div,item])
 
     grouping: (list) ->
         fin = {}

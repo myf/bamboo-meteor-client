@@ -4,7 +4,10 @@ body{
 }
 input{
     width:300px;
+    height:20px;
+    font-size:1.3em;
 }
+    
 #dataSourceURL{
     margin-top:10px;
 }
@@ -14,7 +17,6 @@ input{
 .url_init{
     position:absolute;
     top:50%;
-    left:40%;
 }
 .logo_bamboo{
     position:absolute;
@@ -32,7 +34,14 @@ input{
 .chosen{
     width:200px;
 }
+#chartBtn{
+    margin-top:20px;
+}
 
+.chart div {
+    stroke:white;
+    fill:green;
+}
 
 /*myf's color 74E01B*/
 /*nanzhu's color CCE89B*/

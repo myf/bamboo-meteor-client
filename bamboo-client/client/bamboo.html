@@ -34,7 +34,7 @@
     {{else}} 
     <div class = 'logo_bamboo'>
     </div>   
-    <div class ='url_init'>
+    <div class ='url_init span6 offset3'>
         <input id="dataSourceURL" type="text"></input>
         <div class="btn" id="submitURL">
             Submit        
@@ -45,20 +45,21 @@
 
 <template name="control_panel">
     {{#if show}}
-        <div class='span8 offset2'>
+        <div class='hero-unit span8 offset2'>
             <div class="page-header">
                 <h3>Control Panel</h3>
             </div>
             <div class="row offset1">
-                View
+                <b>View</b>
                 {{chosen}}
                 <select class="chosen" id="view">
                     {{#each fields}}
                         <option>{{this}}</option>
                     {{/each}}
                 </select>
-                Group by
-                <select class="chosen" id="group-by">
+                <b>Group by</b>
+                <select data-placeholder="choose a group" class="chosen" id="group-by">
+                    <option></option>
                     {{#each groups}}
                         <option>{{this}}</option>
                     {{/each}}
@@ -73,8 +74,15 @@
         </div>    
     {{/if}}
 </template>
+
 <template name="graph">
+{{#if show}}
+    <div class="hero-unit span11">
+        <h2>GRAPHING!</h2>
+        {{charting}}
+        <div class="gg_graph" id="{{field}}.gg"></div>
+    </div>
+{{/if}}
 </template>
 <!--
-<div class="gg_graph" id="{{this}}.gg"></div>
 -->

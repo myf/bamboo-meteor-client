@@ -68,6 +68,7 @@ Meteor.methods(
         dataset =  Datasets.findOne(url: datasetURL)
         # check if dataset valid
         if !(dataset)
+            console.log datasetURL, groupkey
             console.log "no dataset yet, get your summary dataset first"
         else
             datasetID = dataset._id
@@ -76,16 +77,19 @@ Meteor.methods(
                 console.log("summary with datasetID " + datasetID +
                     " and groupkey " + groupkey + " is already cached")
             else
+                groupKey = groupkey
                 request.get(summaryURLf(bambooID, groupkey), (error, body, response) ->
                     if error
                         console.log error
                     else
+                        console.log "let's see !!"+groupkey+"!!"
+                        console.log "let's see !!"+groupKey+"!!"
                         obj = JSON.parse(response)
-                        if groupkey is ""
+                        if groupKey is ""
                             for field of obj
                                 res=
-                                    groupKey: groupkey
-                                    groupVal: groupkey
+                                    groupKey: groupKey
+                                    groupVal: groupKey
                                     data: obj[field]["summary"]
                                     name:field
                                     datasetID: datasetID
