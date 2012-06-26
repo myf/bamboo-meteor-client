@@ -120,7 +120,11 @@ if root.Meteor.is_client
         Meteor.defer(->
             Meteor.call('field_charting')
         )
-    
+        #must add these console.log, then charting function will be recalled
+        if Summaries.findOne( {groupKey : Session.get('currentGroup')} )
+            console.log "something in summaries"
+        else
+            console.log "nothing in summaries"
 
     
 
