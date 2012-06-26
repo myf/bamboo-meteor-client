@@ -68,16 +68,15 @@ if root.Meteor.is_client
         else
             console.log "already cached server side.."
     
-    root.Template.url_entry.exist = ->
+    root.Template.url_entry.current_dataset_url = ->
         Session.get('currentDatasetURL')
 
     root.Template.control_panel.show = ->
         #if there is currentDatasetURL in session-> show
         Session.get('currentDatasetURL')
 
-    #have to write this code to make chosen recognized in jquery
+    # have to write this code to make chosen recognized in jquery
     root.Template.control_panel.chosen= ->
-        #Meteor.defer(-> $('.chosen').chosen())
         Meteor.defer(->
             Meteor.call('chosen')
         )
@@ -93,7 +92,7 @@ if root.Meteor.is_client
         display
 
     root.Template.control_panel.groups= ->
-        #call summarize_by_group
+        # call summarize_by_group
         fields = Session.get('fields')
 
     root.Template.control_panel.num_graph= ->
@@ -125,8 +124,6 @@ if root.Meteor.is_client
             console.log "something in summaries"
         else
             console.log "nothing in summaries"
-
-    
 
 ############# UI LIB #############################
 
@@ -170,6 +167,7 @@ Meteor.methods(
                     "title-size":12
                     "legend-position":"bottom"
                 ).render(div)
+
     d3testing: ->
         d3chart(mock_element)
 
@@ -178,30 +176,31 @@ Meteor.methods(
         for item in graph_divs
             $(item).empty()
 
-    charting: ->
-        Meteor.call('clear_graphs')
-        url = Session.get("currentDatasetURL")
-        group = Session.get("currentGroup") ? "" #some fallback
-        item_list = Summaries.find(datasetURL:url, groupKey:group).fetch()
-        list = Meteor.call('grouping', item_list)
-        $.each(list, (key,value)->
-            for item in value
-                div = "#"+item["name"]+".gg"
-                Meteor.call("make_single_chart",[div,item])
-        )
+#    charting: ->
+#        Meteor.call('clear_graphs')
+#        url = Session.get("currentDatasetURL")
+#        group = Session.get("currentGroup") ? "" #some fallback
+#        item_list = Summaries.find(datasetURL:url, groupKey:group).fetch()
+#        list = Meteor.call('grouping', item_list)
+#        $.each(list, (key,value)->
+#            for item in value
+#                div = "#"+item["name"]+".gg"
+#                Meteor.call("make_single_chart",[div,item])
+#        )
+
     field_charting: ->
         Meteor.call('clear_graphs')
         url = Session.get("currentDatasetURL")
         group = Session.get("currentGroup") ? "" #some fallback
-        field =Session.get("currentView")
+        field = Session.get("currentView")
         item_list = Summaries.find
-            datasetURL:url
-            groupKey:group
-            name:field
+            datasetURL: url
+            groupKey: group
+            name: field
         .fetch()
-        div = "#"+field+".gg"
+        div = "#" + field + ".gg"
         for item in item_list
-            Meteor.call("make_single_chart",[div,item])
+            Meteor.call("make_single_chart", [div, item])
 
     grouping: (list) ->
         fin = {}
@@ -238,6 +237,7 @@ Meteor.methods(
         alert display
 
 )
+
 Array::unique = ->
     output = {}
     output[@[key]] = @[key] for key in [0...@length]

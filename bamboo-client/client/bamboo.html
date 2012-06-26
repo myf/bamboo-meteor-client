@@ -2,27 +2,34 @@
 	<meta charset="UTF-8">
     <title>bamboo meteor client the awesomest of all</title>
 </head>
+
 <body>
     <div class="container-fluid">
         {{> url_entry}}
     </div>
-        <div class="control">
-            {{> control_panel}}
-        </div>
-        <div class="graphing">
-            {{> graph}}
-        </div>
+
+    <div class="hero-unit span11">
+        <h2>Show Introductory Text</h2>
+    </div>
+
+    <div class="control">
+        {{> control_panel}}
+    </div>
+
+    <div class="graphing">
+        {{> graph}}
+    </div>
 </body>
             
 
 <template name="url_entry">
-    {{#if exist}}
-    <!--moving up-->
+    {{#if current_dataset_url}}
     <div class='navbar navbar-fixed-top url'>
         <div class="navbar-inner">
             <div class="container">
                 <div class="pull-right">
-                    <input id="dataSourceURL" type="text" value="{{exist}}"></input>
+                    <input id="dataSourceURL" type="text"
+                            value="{{current_dataset_url}}"></input>
                     <div class="btn" id="submitURL">
                         Submit
                     </div>
@@ -31,8 +38,10 @@
         </div>
     </div>
     {{else}} 
+
     <div class = 'logo_bamboo'>
     </div>   
+
     <div class ='url_init span6 offset3'>
         <input id="dataSourceURL" type="text"></input>
         <div class="btn" id="submitURL">
