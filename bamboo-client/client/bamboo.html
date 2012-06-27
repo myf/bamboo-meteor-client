@@ -7,19 +7,22 @@
     <div class="container-fluid">
         {{> url_entry}}
     </div>
-
-    <div class="hero-unit span11">
-        <h2>Show Introductory Text</h2>
-    </div>
-
-    <div class="control">
-        {{> control_panel}}
-    </div>
-
-    <div class="graphing">
-        {{> graph}}
-    </div>
+    {{> body_render}}
+    <div id="d3select"></div>
 </body>
+<template name="body_render">
+{{#if show}}
+    {{> introduction}}
+    <div class="hero-unit span8 offset1">
+        <div class="control">
+            {{> control_panel}}
+        </div>
+        <div class="graphing">
+            {{> graph}}
+        </div>
+    </div>
+{{/if}}
+</template>
             
 
 <template name="url_entry">
@@ -43,7 +46,7 @@
     </div>   
 
     <div class ='url_init span6 offset3'>
-        <input id="dataSourceURL" type="text"></input>
+        <input id="dataSourceURL" type="text" value="{{constants.defaultURL}}"></input>
         <div class="btn" id="submitURL">
             Submit        
         </div>
@@ -53,7 +56,6 @@
 
 <template name="control_panel">
     {{#if show}}
-        <div class='hero-unit span8 offset2'>
             <div class="page-header">
                 <h3>Control Panel</h3>
             </div>
@@ -79,18 +81,26 @@
             <div class="btn pull-right" id="chartBtn">
                 Chart        
             </div>
-        </div>    
     {{/if}}
 </template>
 
 <template name="graph">
 {{#if show}}
-    <div class="hero-unit span11">
         <h2>GRAPHING!</h2>
         {{charting}}
         <div class="gg_graph" id="{{field}}.gg"></div>
-    </div>
 {{/if}}
 </template>
-<!--
--->
+
+<template name="introduction">
+{{#if url}}
+<div class="hero-unit span11">
+    <p>You are accessing the dataset from {{url}}</p> 
+    <p>There are {{num_cols}} fields you can choose to chart</p>
+    {{#each schema}}
+    <p>{{label}} ({{simpletype}})</p>
+    {{/each}}
+</div>
+    
+{{/if}}
+</template>

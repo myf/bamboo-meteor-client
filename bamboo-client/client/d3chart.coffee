@@ -2,13 +2,14 @@ mock_element =
     name:"birthrate"
     groupVal:"sexywomen"
     groupKey:"attractiveness"
+    datasetURL:"http://google.com"
     data:
         blonde:3
         brunette:2
         redhead:13
 
 #it will take a dataset object and reder svg graph out of it
-d3chart: (dataElement)->
+d3chart= (dataElement)->
     name = dataElement.name
     data = dataElement.data
     width = 200
@@ -16,8 +17,14 @@ d3chart: (dataElement)->
 
     svg = d3.select('body')
             .append('svg:svg')
-            .append('width', width)
-            .append('height',height)
+            .attr('width', width)
+            .attr('height',height)
+    svg.append('svg:rect')
+        .attr('x',100)
+        .attr('y',100)
+        .attr('width',100)
+        .attr('height',100)
+    ###
 
     #domain is from zero to datamax
     #perhaps datamax of the same field? 
@@ -43,6 +50,19 @@ d3chart: (dataElement)->
                 .scale(y_scale)
                 .orient('left')
                 .ticks(5)
+
+    #HOW TO USE RECT???
+
+    svg.selectAll('rect')
+        .data()
+        .enter()
+        .append('rect')
+        .attr('y')
+        .attr('width')
+        .attr('height')
+    ###
+
+
 
 
                 

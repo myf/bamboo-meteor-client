@@ -11,55 +11,12 @@ constants =
 
 ############ UI LOGIC ############################
 if root.Meteor.is_client
-    ###
-    root.Template.navbar.events = "click button": ->
-        url = $('#datasource-url').val()
-        Session.set('currentDatasetURL', url)
-        #TODO: put the following in a Meteor.subscribe section?
-        #TODO: eliminates null url from being registered into db
-        if !Datasets.findOne(url: url)
-            console.log "caching server side.."
-            Meteor.call('register_dataset', url)
-        else
-            console.log "already cached server side.."
-
-    root.Template.control.events = "click button": ->
-        Meteor.call("charting")
-
-    root.Template.control.groups = ->
-        fields = Session.get('fields')
-        #TODO: filter ungroupable stuff out of fields
-
-    root.Template.group.events = "click button": ->
-        group = ""+this
-        Session.set('currentGroup',group)
-        url = Session.get('currentDatasetURL')
-        Meteor.call("summarize_by_group",[url,group])
-
-    root.Template.maincontent.fields = ->
-        Meteor.call("get_fields",Session.get('currentDatasetURL'))
-        fields = Session.get('fields')
-        Meteor.call('generate_visible_fields', fields)
-        visible_fields = Session.get('visible_fields')
-        display = []
-        for item in visible_fields
-            display.push(item['field'])
-        display
-
-
-    ###
-    
-    ###
-    ##getting url
-    root.Template.url-entry.default =Session.get('currentDatasetURL') ? constants.defaultURL
-    ###
-
-
     
     #every function can be accessed by the template it is defined under
     root.Template.url_entry.events = "click .btn": ->
         url = $('#dataSourceURL').val()
         Session.set('currentDatasetURL', url)
+        Meteor.call("get_fields",Session.get('currentDatasetURL'))
         #Meteor.call('chosen')
         if !Datasets.findOne(url: url)
             console.log "caching server side.."
@@ -82,7 +39,6 @@ if root.Meteor.is_client
         )
 
     root.Template.control_panel.fields= ->
-        Meteor.call("get_fields",Session.get('currentDatasetURL'))
         fields = Session.get('fields')
         Meteor.call('generate_visible_fields', fields)
         visible_fields = Session.get('visible_fields')
@@ -93,7 +49,8 @@ if root.Meteor.is_client
 
     root.Template.control_panel.groups= ->
         # call summarize_by_group
-        fields = Session.get('fields')
+        Meteor.call('generate_groupable_fields')
+        fields = Session.get('groupable_fields')
 
     root.Template.control_panel.num_graph= ->
         20
@@ -125,6 +82,22 @@ if root.Meteor.is_client
         else
             console.log "nothing in summaries"
 
+    root.Template.introduction.url =->
+        Session.get('currentDatasetURL')
+
+    root.Template.introduction.num_cols =->
+        Session.get('fields').length
+
+    root.Template.introduction.schema =->
+        url = Session.get('currentDatasetURL')
+        obj = Schemas.findOne
+            datasetURL:url
+        _.values obj.schema
+
+    root.Template.body_render.show =->
+        Session.get('currentDatasetURL')
+
+
 ############# UI LIB #############################
 
 
@@ -144,6 +117,17 @@ Meteor.methods(
                 group_by: group_by
             visible_fields.push(obj)
         Session.set("visible_fields",visible_fields)
+
+    generate_groupable_fields: ->
+        schema = Session.get('schema')
+        fin = []
+        for item of schema
+            if schema[item]['olap_type'] == 'dimension'
+                fin.push(item)
+
+        Session.set('groupable_fields',fin)
+    
+
 
     make_single_chart: (obj) ->
         [div, dataElement] = obj
@@ -216,12 +200,12 @@ Meteor.methods(
 
     get_fields:(url)->
         fin = []
-        dataset = Schemas.findOne
+        schema_dataset = Schemas.findOne
             datasetURL: url
-        if dataset
+        if schema_dataset
             console.log "data found: "
             names = []
-            schema = dataset['schema']
+            schema = schema_dataset['schema']
             for name of schema
                 names.push(name)
             #fields is an array []
@@ -230,6 +214,7 @@ Meteor.methods(
             dataset = Datasets.findOne(url: url)
             if (!dataset)
                 Meteor.call('register_dataset', url)
+        Session.set('schema', schema_dataset.schema)
         Session.set('fields', fin)
     #testing only
     alert: (something)->
