@@ -82,8 +82,6 @@ Meteor.methods(
                     if error
                         console.log error
                     else
-                        console.log "let's see !!"+groupkey+"!!"
-                        console.log "let's see !!"+groupKey+"!!"
                         obj = JSON.parse(response)
                         if groupKey is ""
                             for field of obj
