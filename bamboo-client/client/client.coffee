@@ -16,21 +16,30 @@ if root.Meteor.is_client
     root.Template.url_entry.events = "click .btn": ->
         url = $('#dataSourceURL').val()
         Session.set('currentDatasetURL', url)
-        Meteor.call("get_fields",Session.get('currentDatasetURL'))
         #Meteor.call('chosen')
         if !Datasets.findOne(url: url)
             console.log "caching server side.."
-            Meteor.call('register_dataset', url)
-            Meteor.call('summarize_by_group',[url,''])
+            #todo: add async to serize register & get_fields
+            Meteor.call('register_dataset', url, ->
+                interval = setInterval(->
+                    #Meteor.call("get_fields", url)
+                    #if Session.get('fields')
+                    if Schemas.findOne(datasetURL: url)
+                        console.log "booya"
+                        Meteor.call("get_fields", url)
+                        clearInterval(interval)
+                ,300)
+            )
         else
             console.log "already cached server side.."
+            Meteor.call("get_fields",url)
     
     root.Template.url_entry.current_dataset_url = ->
         Session.get('currentDatasetURL')
 
     root.Template.control_panel.show = ->
         #if there is currentDatasetURL in session-> show
-        Session.get('currentDatasetURL')
+        Session.get('currentDatasetURL') and Session.get('fields')
 
     # have to write this code to make chosen recognized in jquery
     root.Template.control_panel.chosen= ->
@@ -73,6 +82,8 @@ if root.Meteor.is_client
         div = Session.get('currentView')
     
     root.Template.graph.charting =->
+        #todo: move summarize_by_group here?
+        #todo: use async to serize sum & charting
         Meteor.defer(->
             Meteor.call('field_charting')
         )
@@ -83,7 +94,7 @@ if root.Meteor.is_client
             console.log "nothing in summaries"
 
     root.Template.introduction.url =->
-        Session.get('currentDatasetURL')
+        Session.get('currentDatasetURL') and Session.get('fields')
 
     root.Template.introduction.num_cols =->
         Session.get('fields').length
@@ -95,7 +106,7 @@ if root.Meteor.is_client
         _.values obj.schema
 
     root.Template.body_render.show =->
-        Session.get('currentDatasetURL')
+        Session.get('currentDatasetURL') and Session.get('fields')
 
 
 ############# UI LIB #############################
@@ -202,6 +213,7 @@ Meteor.methods(
         fin = []
         schema_dataset = Schemas.findOne
             datasetURL: url
+            #alert "in get_fields:schema_dataset " + schema_dataset
         if schema_dataset
             console.log "data found: "
             names = []
@@ -210,12 +222,20 @@ Meteor.methods(
                 names.push(name)
             #fields is an array []
             fin = names
+            #alert "found schema" + fin
+        ###
         else
             dataset = Datasets.findOne(url: url)
             if (!dataset)
                 Meteor.call('register_dataset', url)
-        Session.set('schema', schema_dataset.schema)
-        Session.set('fields', fin)
+        ###
+        try
+            Session.set('schema', schema_dataset.schema)
+            Session.set('fields', fin)
+        catch error
+            console.log "no schema yet.. waiting"
+        #alert fin
+
     #testing only
     alert: (something)->
         display = something ? "here here"

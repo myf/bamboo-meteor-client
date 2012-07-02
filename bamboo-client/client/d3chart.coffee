@@ -19,24 +19,19 @@ d3chart= (dataElement)->
             .append('svg:svg')
             .attr('width', width)
             .attr('height',height)
+
+    #domain maps to range pixels
+    #i.e. if you have a data of 20 it appears to be 100px
+    x_scale = d3.scale.linear()
+                .domain([0,20])
+                .range([0,100])
+
     svg.append('svg:rect')
         .attr('x',100)
         .attr('y',100)
         .attr('width',100)
         .attr('height',100)
     ###
-
-    #domain is from zero to datamax
-    #perhaps datamax of the same field? 
-    #we want to compare across different graphs
-    #
-    #range is from zero to output max pixel
-    #
-    #ordinal scale
-    x_scale = d3.scale.linear()
-                .domain([])
-                .range([])
-
     y_scale = d3.scale.linear()
                 .domain([])
                 .range([])
