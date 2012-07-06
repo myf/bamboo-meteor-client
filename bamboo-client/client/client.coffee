@@ -171,11 +171,20 @@ Meteor.methods(
                 ).render(div)
     make_single_chart: (obj) ->
         [div, dataElement] =obj
-        d3chart(dataElement,div)
+        #chart based on groupable property
+        if dataElement.name in Session.get("groupable_fields")
+            barchart(dataElement,div)
+        else
+            boxplot(dataElement,div)
 
     d3testing: (data)->
         char_element = data ? mock_element
         d3chart(char_element, "#d3select")
+
+    boxtesting: (data) ->
+        char_element = data ? mock_element_2
+        boxplot(char_element, "#d3select")
+
 
     clear_graphs: ->
         graph_divs = $('.gg_graph')

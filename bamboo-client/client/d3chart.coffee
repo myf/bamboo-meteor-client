@@ -44,7 +44,7 @@ maxing = (data) ->
     _.max(values)
 
 #div is <div>location on the html page
-d3chart= (dataElement,div)->
+barchart= (dataElement,div)->
     name = dataElement.name
     data = data_massage(dataElement.data)
     y_padding = 15
@@ -69,11 +69,6 @@ d3chart= (dataElement,div)->
 
     #domain maps to range pixels
     #i.e. if you have a data of 20 it appears to be 100px
-    ###
-    x_scale = d3.scale.linear()
-                .domain([0,20])
-                .range([0,100])
-    ###
 
     y_scale = d3.scale.linear()
                 .domain([0,max])
@@ -159,3 +154,109 @@ d3chart= (dataElement,div)->
         .call(y_axis)
                 
 boxplot= (dataElement, div)->
+    console.log "enter"
+    name = dataElement.name
+    data = dataElement.data
+    y_padding = 15
+    x_padding = 20
+    font = 10
+    max = maxing(dataElement.data)
+    display = ['min','25%','50%','75%','max']
+    
+    width = 200
+    height = width*1.5
+
+    svg = d3.select(div)
+            .append('svg:svg')
+            .attr('width', width)
+            .attr('height',height)
+            
+    y_scale = d3.scale.linear()
+		        .domain([data.min, data.max])
+		        .range([height-y_padding, y_padding])
+
+    y_axis = d3.svg.axis()
+                .scale(y_scale)
+                .orient("left")
+                .ticks(5)
+
+    svg.selectAll("text")
+        .data(data_massage(data))
+        .enter().append("text")
+        .text((d)->
+            if d.key in display
+                d.value.toString()
+        )
+        .attr('x', width/6*5)
+        .attr('y',(d)->
+            y_scale d.value
+        )
+        .attr("font-size", font.toString()+"px")
+        .attr("fill","black")
+
+    svg.append("line")
+        .style("stroke", "rgba(46, 139, 87, 0.7)")
+        .style("stroke-width", "5px")
+        .attr("x1", width / 6)
+        .attr("y1", y_scale(data["50%"]))
+        .attr("x2", width / 6 * 5)
+        .attr("y2", y_scale(data["50%"]))
+
+    svg.append("line")
+        .style("stroke", "black")
+        .style("stroke-width", "4px")
+        .attr("x1", width / 4)
+        .attr("y1", y_scale(data["25%"]))
+        .attr("x2", width / 4 * 3)
+        .attr("y2", y_scale(data["25%"]))
+
+    svg.append("line")
+        .style("stroke", "black")
+        .style("stroke-width", "4px")
+        .attr("x1", width / 4)
+        .attr("y1", y_scale(data["75%"]))
+        .attr("x2", width / 4 * 3)
+        .attr("y2", y_scale(data["75%"])) 
+    
+    svg.append("line")
+        .style("stroke", "black")
+        .style("stroke-width", "3px")
+        .attr("x1", width / 2)
+        .attr("y1", y_scale(data.min))
+        .attr("x2", width / 2)
+        .attr("y2", y_scale(data.max))
+
+    svg.append("line")
+        .style("stroke", "black")
+        .style("stroke-width", "1px")
+        .attr("x1", width / 6 * 2)
+        .attr("y1", y_scale(data.min))
+        .attr("x2", width / 6 * 4)
+        .attr("y2", y_scale(data.min))
+   
+    svg.append("line")
+        .style("stroke", "black")
+        .style("stroke-width", "1px")
+        .attr("x1", width / 6 * 2)
+        .attr("y1", y_scale(data.max))
+        .attr("x2", width / 6 * 4)
+        .attr("y2", y_scale(data.max))
+
+    svg.append("rect")
+        .attr("x", width / 4)
+        .attr("y", y_scale(data["75%"]))
+        .attr("width", width / 2)
+        .attr("height", y_scale(data["25%"]) - y_scale(data["75%"]))
+        .style("fill", "rgba(250, 128, 114, 0.7)")
+    
+    svg.append("g")
+        .attr("transform", "translate(" + width / 6  + ", 0)")
+        .attr("fill", "none")
+        .attr("stroke", "black")
+        .attr("shape-rendering", "crispEdges")
+        .style("font-family", "sans-serif")
+        .style("font-size", "11px")
+        .call(y_axis)
+    ""
+
+
