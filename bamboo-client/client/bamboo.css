@@ -43,6 +43,10 @@ input{
     fill:green;
 }
 
-
+#d3select {
+    position:absolute;
+    top:60%;
+    left:40%;
+}
 /*myf's color 74E01B*/
 /*nanzhu's color CCE89B*/

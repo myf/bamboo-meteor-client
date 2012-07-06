@@ -71,6 +71,7 @@ if root.Meteor.is_client
         Meteor.call("summarize_by_group",[url,group])
         Session.set('currentGroup', group)
         Session.set('currentView', view_field)
+        Session.set('graph', false)
 
     root.Template.graph.show=->
         url = Session.get('currentDatasetURL')
@@ -84,16 +85,20 @@ if root.Meteor.is_client
     root.Template.graph.charting =->
         #todo: move summarize_by_group here?
         #todo: use async to serize sum & charting
-        Meteor.defer(->
-            Meteor.call('field_charting')
-        )
-        #must add these console.log, then charting function will be recalled
-        if Summaries.findOne( {groupKey : Session.get('currentGroup')} )
-            console.log "something in summaries"
-        else
-            console.log "nothing in summaries"
+        fieldInterval = setInterval(->
+                console.log "hardcore summary action"
+                summary = Summaries.findOne( {groupKey : Session.get('currentGroup')} )
+                if summary
+                    Meteor.call('field_charting')
+                    Session.set('graph', true)
+                    clearInterval(fieldInterval)
+            ,1000)
+        ""
 
-    root.Template.introduction.url =->
+    root.Template.processing.ready =->
+        Session.get('currentDatasetURL') and not Session.get('fields')
+
+    root.Template.introduction.ready =->
         Session.get('currentDatasetURL') and Session.get('fields')
 
     root.Template.introduction.num_cols =->
@@ -108,6 +113,8 @@ if root.Meteor.is_client
     root.Template.body_render.show =->
         Session.get('currentDatasetURL') and Session.get('fields')
 
+    root.Template.waiting_graph.exist =->
+        exist  = Session.get('graph')
 
 ############# UI LIB #############################
 
@@ -140,7 +147,7 @@ Meteor.methods(
     
 
 
-    make_single_chart: (obj) ->
+    make_poly_chart: (obj) ->
         [div, dataElement] = obj
         #dataElement.titleName = makeTitle(dataElement.name)
         dataElement.titleName = dataElement["groupVal"]
@@ -162,9 +169,13 @@ Meteor.methods(
                     "title-size":12
                     "legend-position":"bottom"
                 ).render(div)
+    make_single_chart: (obj) ->
+        [div, dataElement] =obj
+        d3chart(dataElement,div)
 
-    d3testing: ->
-        d3chart(mock_element)
+    d3testing: (data)->
+        char_element = data ? mock_element
+        d3chart(char_element, "#d3select")
 
     clear_graphs: ->
         graph_divs = $('.gg_graph')
@@ -193,7 +204,7 @@ Meteor.methods(
             groupKey: group
             name: field
         .fetch()
-        div = "#" + field + ".gg"
+        div = "#" + field+"_graph"
         for item in item_list
             Meteor.call("make_single_chart", [div, item])
 

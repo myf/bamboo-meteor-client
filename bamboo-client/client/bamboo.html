@@ -7,6 +7,7 @@
     <div class="container-fluid">
         {{> url_entry}}
     </div>
+    {{> processing}}
     {{> body_render}}
     <div id="d3select"></div>
 </body>
@@ -86,14 +87,23 @@
 
 <template name="graph">
 {{#if show}}
-        <h2>GRAPHING!</h2>
+        {{>waiting_graph}}
         {{charting}}
-        <div class="gg_graph" id="{{field}}.gg"></div>
+        <div class="d3_graph" id="{{field}}_graph"></div>
+{{/if}}
+</template>
+
+<template name="waiting_graph">
+{{#if exist}}
+    Graphs: 
+{{else}}
+    Proccessing the graphs, waiting a split second...
+    <img src="drop.gif">
 {{/if}}
 </template>
 
 <template name="introduction">
-{{#if url}}
+{{#if ready}}
 <div class="hero-unit span11">
     <p>You are accessing the dataset from {{url}}</p> 
     <p>There are {{num_cols}} fields you can choose to chart</p>
@@ -101,6 +111,14 @@
     <p>{{label}} ({{simpletype}})</p>
     {{/each}}
 </div>
-    
+{{/if}}
+</template>
+
+<template name="processing">
+{{#if ready}}
+    <div class="hero-unit span8 offset1">
+        <h1>Preparing your dataset, just a split second..</h1>
+    <img src="drop.gif">
+    </div>
 {{/if}}
 </template>
