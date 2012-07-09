@@ -43,6 +43,14 @@ maxing = (data) ->
             values.remove(elem)
     _.max(values)
 
+mining = (data) ->
+    values = _.values(data)
+    for elem in values
+        if typeof elem is 'string'
+            values.remove(elem)
+    _.min(values)
+
+
 #div is <div>location on the html page
 d3chart = (dataElement,div)->
     data = dataElement.data
@@ -57,13 +65,12 @@ d3chart = (dataElement,div)->
     else
         barchart(dataElement,div)
 
-barchart= (dataElement,div)->
+barchart= (dataElement, div, min, max)->
     name = dataElement.name
     data = data_massage(dataElement.data)
     y_padding = 15
     x_padding = 20
     font = 10
-    max = maxing(dataElement.data)
     
     name_max = _.max(_.map(_.keys(dataElement.data), (word)->
         word.length
@@ -166,7 +173,7 @@ barchart= (dataElement,div)->
         .attr("font-size", "10px")
         .call(y_axis)
                 
-boxplot= (dataElement, div)->
+boxplot= (dataElement, div, min, max)->
     console.log "enter"
     name = dataElement.name
     data = dataElement.data
@@ -175,11 +182,10 @@ boxplot= (dataElement, div)->
         display_value = dataElement.data.min
         dataElement.data = {}
         dataElement.data[display_name]=display_value
-        return barchart(dataElement, div)
+        return barchart(dataElement, div, min, max)
     y_padding = 15
     x_padding = 20
     font = 10
-    max = maxing(dataElement.data)
     display = ['min','25%','50%','75%','max']
     
     width = 200
@@ -191,13 +197,15 @@ boxplot= (dataElement, div)->
             .attr('height',height)
             
     y_scale = d3.scale.linear()
-		        .domain([data.min, data.max])
+		        .domain([min, max])
 		        .range([height-y_padding, y_padding])
 
     y_axis = d3.svg.axis()
                 .scale(y_scale)
                 .orient("left")
                 .ticks(5)
+
+    console.log "ok before adding the texts"
 
     svg.selectAll("text")
         .data(data_massage(data))
@@ -213,6 +221,8 @@ boxplot= (dataElement, div)->
         .attr("font-size", font.toString()+"px")
         .attr("fill","black")
 
+    console.log "ok before adding the lines"
+   
     svg.append("line")
         .style("stroke", "rgba(46, 139, 87, 0.7)")
         .style("stroke-width", "5px")
