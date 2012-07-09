@@ -44,6 +44,19 @@ maxing = (data) ->
     _.max(values)
 
 #div is <div>location on the html page
+d3chart = (dataElement,div)->
+    data = dataElement.data
+    display = ['min','25%','50%','75%','max']
+    keys = _.keys(data)
+    box_flag = true
+    for item in display
+        if item not in keys
+            box_flag = false
+    if box_flag is true
+        boxplot(dataElement,div)
+    else
+        barchart(dataElement,div)
+
 barchart= (dataElement,div)->
     name = dataElement.name
     data = data_massage(dataElement.data)
@@ -157,6 +170,12 @@ boxplot= (dataElement, div)->
     console.log "enter"
     name = dataElement.name
     data = dataElement.data
+    if data.count is 1
+        display_name = dataElement.groupVal
+        display_value = dataElement.data.min
+        dataElement.data = {}
+        dataElement.data[display_name]=display_value
+        return barchart(dataElement, div)
     y_padding = 15
     x_padding = 20
     font = 10

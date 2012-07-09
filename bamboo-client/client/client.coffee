@@ -177,14 +177,6 @@ Meteor.methods(
         else
             boxplot(dataElement,div)
 
-    d3testing: (data)->
-        char_element = data ? mock_element
-        d3chart(char_element, "#d3select")
-
-    boxtesting: (data) ->
-        char_element = data ? mock_element_2
-        boxplot(char_element, "#d3select")
-
 
     clear_graphs: ->
         graph_divs = $('.gg_graph')
