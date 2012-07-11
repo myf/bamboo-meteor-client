@@ -16,7 +16,6 @@ if root.Meteor.is_client
     root.Template.url_entry.events = "click .btn": ->
         url = $('#dataSourceURL').val()
         Session.set('currentDatasetURL', url)
-        #Meteor.call('chosen')
         if !Datasets.findOne(url: url)
             console.log "caching server side.."
             #todo: add async to serize register & get_fields
