@@ -39,8 +39,7 @@ if root.Meteor.is_client
 
     root.Template.control_panel.show = ->
         #if there is currentDatasetURL in session-> show
-        Session.get('currentDatasetURL') and Session.get('fields')
-
+        Session.get('currentDatasetURL') and Session.get('fields') and not Session.get('graph')
     # have to write this code to make chosen recognized in jquery
     root.Template.control_panel.chosen= ->
         Meteor.defer(->
@@ -110,11 +109,43 @@ if root.Meteor.is_client
             datasetURL:url
         _.values obj.schema
 
+    root.Template.introduction.schema_less =->
+        url = Session.get('currentDatasetURL')
+        obj = Schemas.findOne
+            datasetURL:url
+        arr = _.values obj.schema
+        arr.slice(0,5)
+
+    root.Template.introduction.events= {
+        "click #moreBtn": ->
+            Session.set('show_all', true)
+        "click #hideBtn": ->
+            Session.set('show_all', false)
+    }
+
+    root.Template.introduction.long =->
+        Session.get('fields').length > 5
+
+    root.Template.introduction.show_all =->
+        Session.get('fields').length < 6 or Session.get('show_all')
+
     root.Template.body_render.show =->
         Session.get('currentDatasetURL') and Session.get('fields')
 
     root.Template.waiting_graph.exist =->
         exist  = Session.get('graph')
+
+    root.Template.waiting_graph.field =->
+        Session.get("currentView")
+    root.Template.waiting_graph.group_by =->
+        g = Session.get("currentGroup")
+        if g is ""
+            return ""
+        else
+            return "grouped by " + g
+
+    root.Template.add_new_graph.show =->
+        Session.get('graph')
 
 ############# UI LIB #############################
 
@@ -167,6 +198,7 @@ Meteor.methods(
         url = Session.get("currentDatasetURL")
         group = Session.get("currentGroup") ? "" #some fallback
         field = Session.get("currentView")
+        groupable = Session.get("groupable_fields")
         item_list = Summaries.find
             datasetURL: url
             groupKey: group
@@ -174,13 +206,13 @@ Meteor.methods(
         .fetch()
         div = "#" + field+"_graph"
         max_arr = item_list.map (item)->
-            if item.name in Session.get("groupable_fields")
+            if item.name in groupable
                 maxing(item.data)
             else
                 item.data.max
         max = _.max(max_arr)
         min_arr = item_list.map (item)->
-            if item.name in Session.get("groupable_fields")
+            if item.name in groupable
                 mining(item.data)
             else
                 item.data.min

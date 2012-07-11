@@ -92,7 +92,7 @@ barchart= (dataElement, div, min, max)->
 
     y_scale = d3.scale.linear()
                 .domain([0,max])
-                .range([height - y_padding, 0])
+                .range([height - y_padding, y_padding])
 
 
     x_scale = d3.scale.linear()
@@ -110,7 +110,13 @@ barchart= (dataElement, div, min, max)->
             y_scale d.value
         )
         .attr('width',(d)->
-            (width-x_padding) / data.length - bar_padding
+            w = (width-x_padding) / data.length - bar_padding
+            ###
+            if w > 45
+                return 45
+            else
+                w
+            ###
         )
         .attr('height',(d)->
             height - y_padding - y_scale d.value
@@ -205,7 +211,13 @@ boxplot= (dataElement, div, min, max)->
                 .orient("left")
                 .ticks(5)
 
-    console.log "ok before adding the texts"
+    svg.append("text")
+        .text(dataElement.groupVal)
+        .attr('x', width/3)
+        .attr('y', height)
+        .attr("font-family", "Monospace")
+        .attr("font-size", 15 + "px")
+        .attr("fill", "black")
 
     svg.selectAll("text")
         .data(data_massage(data))
@@ -221,8 +233,6 @@ boxplot= (dataElement, div, min, max)->
         .attr("font-size", font.toString()+"px")
         .attr("fill","black")
 
-    console.log "ok before adding the lines"
-   
     svg.append("line")
         .style("stroke", "rgba(46, 139, 87, 0.7)")
         .style("stroke-width", "5px")
