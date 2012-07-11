@@ -104,16 +104,12 @@ if root.Meteor.is_client
         Session.get('fields').length
 
     root.Template.introduction.schema =->
-        url = Session.get('currentDatasetURL')
-        obj = Schemas.findOne
-            datasetURL:url
-        _.values obj.schema
+        schema = Session.get('schema')
+        _.values schema
 
     root.Template.introduction.schema_less =->
-        url = Session.get('currentDatasetURL')
-        obj = Schemas.findOne
-            datasetURL:url
-        arr = _.values obj.schema
+        schema = Session.get('schema')
+        arr = _.values schema
         arr.slice(0,5)
 
     root.Template.introduction.events= {
