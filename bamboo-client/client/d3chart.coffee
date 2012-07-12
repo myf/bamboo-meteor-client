@@ -53,6 +53,7 @@ mining = (data) ->
 
 #div is <div>location on the html page
 d3chart = (dataElement,div)->
+    alert "enter"
     data = dataElement.data
     display = ['min','25%','50%','75%','max']
     keys = _.keys(data)
@@ -60,15 +61,30 @@ d3chart = (dataElement,div)->
     for item in display
         if item not in keys
             box_flag = false
+    str = ""
+    if dataElement.groupVal is ""
+        str = "" + dataElement.name
+    else
+        str = "" + dataElement.name + "grouped by " + dataElement.groupVal
+    console.log str
     if box_flag is true
+        Session.set("titles", "Box Plot of " + str)
         boxplot(dataElement,div)
     else
+        Session.set("titles", "Bar Chart of " + str)
         barchart(dataElement,div)
 
 barchart= (dataElement, div, min, max)->
+    
+    if dataElement.groupKey is ""
+        str = "" + dataElement.name
+    else
+        str = "" + dataElement.name + " grouped by " + dataElement.groupKey
+    Session.set("titles", "Bar Chart of " + str)
+    
     name = dataElement.name
     data = data_massage(dataElement.data)
-    y_padding = 15
+    y_padding = 20
     x_padding = 20
     font = 10
     
@@ -99,6 +115,7 @@ barchart= (dataElement, div, min, max)->
                 .domain([0,width])
                 .range([x_padding, width])
 
+
     svg.selectAll('rect')
         .data(data)
         .enter()
@@ -111,22 +128,33 @@ barchart= (dataElement, div, min, max)->
         )
         .attr('width',(d)->
             w = (width-x_padding) / data.length - bar_padding
-            ###
-            if w > 45
-                return 45
-            else
-                w
-            ###
         )
         .attr('height',(d)->
             height - y_padding - y_scale d.value
         )
         .style('fill', 'SeaGreen')
-        .on('mouseover', ->
+        .on('mouseover', (d)->
             d3.select(this)
                 .style('fill','rgba(46, 139, 87, 0.7)')
+                #add the name of the bar
+
+            g = svg.append('g')
+            g.append('rect')
+                .attr('x', this.x.animVal.value + x_padding)
+                .attr('y', this.y.animVal.value - y_padding)
+                .attr('width', '100')
+                .attr('height', '50')
+                .attr('fill', 'white')
+                .attr('class', 'borderset')
+            g.append('text')
+                .text(d.key)
+                .attr("font-size", "20px")
+                .attr('x', this.x.animVal.value + x_padding)
+                .attr('y', this.y.animVal.value)
+
         )
         .on('mouseout', ->
+            d3.select(this.parentNode.lastChild).remove()
             d3.select(this)
                 .style('fill', 'SeaGreen')
         )
@@ -164,6 +192,13 @@ barchart= (dataElement, div, min, max)->
         .attr("font-size", font.toString + "px")
         .attr("fill", "black")
 
+    svg.append("text")
+        .text("Amount")
+        .attr("x", "0")
+        .attr("y", y_padding/2)
+        .attr("font-family", "Monospace")
+        .attr("font-size", "15px")
+        .attr("fill", "black")
 
     y_axis = d3.svg.axis()
                 .scale(y_scale)
@@ -189,7 +224,14 @@ boxplot= (dataElement, div, min, max)->
         dataElement.data = {}
         dataElement.data[display_name]=display_value
         return barchart(dataElement, div, min, max)
-    y_padding = 15
+    
+    if dataElement.groupKey is ""
+        str = "" + dataElement.name
+    else
+        str = "" + dataElement.name + " grouped by " + dataElement.groupKey
+    Session.set("titles", "Box Plot of " + str)
+
+    y_padding = 20
     x_padding = 20
     font = 10
     display = ['min','25%','50%','75%','max']
@@ -210,6 +252,14 @@ boxplot= (dataElement, div, min, max)->
                 .scale(y_scale)
                 .orient("left")
                 .ticks(5)
+
+    svg.append("text")
+        .text(name)
+        .attr("x", "0")
+        .attr("y", y_padding/2)
+        .attr("font-family", "Monospace")
+        .attr("font-size", "15px")
+        .attr("fill", "black")
 
     svg.append("text")
         .text(dataElement.groupVal)

@@ -60,3 +60,9 @@ input{
 .mainbody {
     margin:50px;
 }
+
+.borderset {
+    stroke: grey;
+    stroke-width: 2px;
+}
+

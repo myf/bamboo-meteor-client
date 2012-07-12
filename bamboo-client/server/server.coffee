@@ -4,6 +4,7 @@ request = require 'request'
 #bambooURL = 'http://localhost:8080'
 #bambooURL = 'http://bamboo.modilabs.org/'
 bambooURL = 'http://bamboo.io/'
+#bambooURL = 'http://starscream.modilabs.org:8080/'
 datasetsURL = bambooURL + '/datasets'
 summaryURLf = (id,group) -> datasetsURL + '/' + id + '/summary' +
     if group then '?group=' + group else ''
