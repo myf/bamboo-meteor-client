@@ -84,19 +84,24 @@ barchart= (dataElement, div, min, max)->
     
     name = dataElement.name
     data = data_massage(dataElement.data)
-    y_padding = 20
-    x_padding = 20
     font = 10
-    
+    ###
     name_max = _.max(_.map(_.keys(dataElement.data), (word)->
         word.length
     ))
+    
     width = _.max([name_max*font*data.length,200])
     height = width*0.75
     bar_width = (width-x_padding) / data.length
     y_ele_max = _.max([name_max*font,bar_width])
     bar_padding = _.max([name_max*font-bar_width,2])
-
+    ###
+    
+    width = 200
+    height = 150
+    y_padding = 20
+    x_padding = 20
+    bar_padding = 2
     svg = d3.select(div)
             .append('svg:svg')
             .attr('width', width)
@@ -108,20 +113,21 @@ barchart= (dataElement, div, min, max)->
 
     y_scale = d3.scale.linear()
                 .domain([0,max])
-                .range([height - y_padding, y_padding])
+                .range([height - y_padding,  y_padding])
 
-
+    ###
     x_scale = d3.scale.linear()
                 .domain([0,width])
                 .range([x_padding, width])
-
+    ###
 
     svg.selectAll('rect')
         .data(data)
         .enter()
         .append('rect')
         .attr('x',(d,i)->
-           x_scale i*(width/data.length)
+            #       x_scale i*(width/data.length)
+            x_padding + bar_padding + (width - x_padding) / data.length * i
         )
         .attr('y',(d)->
             y_scale d.value
@@ -137,19 +143,21 @@ barchart= (dataElement, div, min, max)->
             d3.select(this)
                 .style('fill','rgba(46, 139, 87, 0.7)')
                 #add the name of the bar
-
+            posx = this.x.animVal.value + x_padding
+            if posx + 100 > width
+                posx = width - 100
             g = svg.append('g')
             g.append('rect')
-                .attr('x', this.x.animVal.value + x_padding)
+                .attr('x', posx)
                 .attr('y', this.y.animVal.value - y_padding)
                 .attr('width', '100')
                 .attr('height', '50')
                 .attr('fill', 'white')
                 .attr('class', 'borderset')
             g.append('text')
-                .text(d.key)
-                .attr("font-size", "20px")
-                .attr('x', this.x.animVal.value + x_padding)
+                .text(d.key + ":" + d.value)
+                .attr("font-size", "12px")
+                .attr('x', posx)
                 .attr('y', this.y.animVal.value)
 
         )
@@ -159,6 +167,7 @@ barchart= (dataElement, div, min, max)->
                 .style('fill', 'SeaGreen')
         )
 
+    ###
     svg.selectAll('text')
         .data(data)
         .enter().append('text')
@@ -191,6 +200,7 @@ barchart= (dataElement, div, min, max)->
         .attr("font-family", "Monospace")
         .attr("font-size", font.toString + "px")
         .attr("fill", "black")
+    ###
 
     svg.append("text")
         .text("Amount")
@@ -211,7 +221,7 @@ barchart= (dataElement, div, min, max)->
         .attr("stroke", "black")
         .attr("shape-rendering", "crispEdges")
         .attr("font-family", "Helvetica, sans-serif")
-        .attr("font-size", "10px")
+        .attr("font-size", "8px")
         .call(y_axis)
                 
 boxplot= (dataElement, div, min, max)->
