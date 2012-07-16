@@ -50,3 +50,22 @@ input{
 }
 /*myf's color 74E01B*/
 /*nanzhu's color CCE89B*/
+
+.box {
+    border:1px solid;
+}
+.control .row {
+    margin-left:20px;
+}
+.mainbody {
+    margin:50px;
+}
+
+.borderset {
+    opacity: 0.9;
+    stroke: grey;
+    stroke-width: 2px;
+    -webkit-box-shadow: 0 0 5px 5px #888888;
+    box-shadow: 0 0 5px 5px #888888;
+}
+
