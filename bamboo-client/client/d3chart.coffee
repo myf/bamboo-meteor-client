@@ -43,24 +43,65 @@ maxing = (data) ->
             values.remove(elem)
     _.max(values)
 
+mining = (data) ->
+    values = _.values(data)
+    for elem in values
+        if typeof elem is 'string'
+            values.remove(elem)
+    _.min(values)
+
+
 #div is <div>location on the html page
-barchart= (dataElement,div)->
+d3chart = (dataElement,div)->
+    alert "enter"
+    data = dataElement.data
+    display = ['min','25%','50%','75%','max']
+    keys = _.keys(data)
+    box_flag = true
+    for item in display
+        if item not in keys
+            box_flag = false
+    str = ""
+    if dataElement.groupVal is ""
+        str = "" + dataElement.name
+    else
+        str = "" + dataElement.name + "grouped by " + dataElement.groupVal
+    console.log str
+    if box_flag is true
+        Session.set("titles", "Box Plot of " + str)
+        boxplot(dataElement,div)
+    else
+        Session.set("titles", "Bar Chart of " + str)
+        barchart(dataElement,div)
+
+barchart= (dataElement, div, min, max)->
+    
+    if dataElement.groupKey is ""
+        str = "" + dataElement.name
+    else
+        str = "" + dataElement.name + " grouped by " + dataElement.groupKey
+    Session.set("titles", "Bar Chart of " + str)
+    
     name = dataElement.name
     data = data_massage(dataElement.data)
-    y_padding = 15
-    x_padding = 20
     font = 10
-    max = maxing(dataElement.data)
-    
+    ###
     name_max = _.max(_.map(_.keys(dataElement.data), (word)->
         word.length
     ))
+    
     width = _.max([name_max*font*data.length,200])
     height = width*0.75
     bar_width = (width-x_padding) / data.length
     y_ele_max = _.max([name_max*font,bar_width])
     bar_padding = _.max([name_max*font-bar_width,2])
-
+    ###
+    
+    width = 200
+    height = 150
+    y_padding = 20
+    x_padding = 20
+    bar_padding = 2
     svg = d3.select(div)
             .append('svg:svg')
             .attr('width', width)
@@ -72,39 +113,61 @@ barchart= (dataElement,div)->
 
     y_scale = d3.scale.linear()
                 .domain([0,max])
-                .range([height - y_padding, 0])
+                .range([height - y_padding,  y_padding])
 
-
+    ###
     x_scale = d3.scale.linear()
                 .domain([0,width])
                 .range([x_padding, width])
+    ###
 
     svg.selectAll('rect')
         .data(data)
         .enter()
         .append('rect')
         .attr('x',(d,i)->
-           x_scale i*(width/data.length)
+            #       x_scale i*(width/data.length)
+            x_padding + bar_padding + (width - x_padding) / data.length * i
         )
         .attr('y',(d)->
             y_scale d.value
         )
         .attr('width',(d)->
-            (width-x_padding) / data.length - bar_padding
+            w = (width-x_padding) / data.length - bar_padding
         )
         .attr('height',(d)->
             height - y_padding - y_scale d.value
         )
         .style('fill', 'SeaGreen')
-        .on('mouseover', ->
+        .on('mouseover', (d)->
             d3.select(this)
                 .style('fill','rgba(46, 139, 87, 0.7)')
+                #add the name of the bar
+            posx = this.x.animVal.value + x_padding
+            if posx + 100 > width
+                posx = width - 100
+            g = svg.append('g')
+            g.append('rect')
+                .attr('x', posx)
+                .attr('y', this.y.animVal.value - y_padding)
+                .attr('width', '100')
+                .attr('height', '50')
+                .attr('fill', 'white')
+                .attr('class', 'borderset')
+            g.append('text')
+                .text(d.key + ":" + d.value)
+                .attr("font-size", "12px")
+                .attr('x', posx)
+                .attr('y', this.y.animVal.value)
+
         )
         .on('mouseout', ->
+            d3.select(this.parentNode.lastChild).remove()
             d3.select(this)
                 .style('fill', 'SeaGreen')
         )
 
+    ###
     svg.selectAll('text')
         .data(data)
         .enter().append('text')
@@ -137,7 +200,15 @@ barchart= (dataElement,div)->
         .attr("font-family", "Monospace")
         .attr("font-size", font.toString + "px")
         .attr("fill", "black")
+    ###
 
+    svg.append("text")
+        .text("Amount")
+        .attr("x", "0")
+        .attr("y", y_padding/2)
+        .attr("font-family", "Monospace")
+        .attr("font-size", "15px")
+        .attr("fill", "black")
 
     y_axis = d3.svg.axis()
                 .scale(y_scale)
@@ -150,17 +221,29 @@ barchart= (dataElement,div)->
         .attr("stroke", "black")
         .attr("shape-rendering", "crispEdges")
         .attr("font-family", "Helvetica, sans-serif")
-        .attr("font-size", "10px")
+        .attr("font-size", "8px")
         .call(y_axis)
                 
-boxplot= (dataElement, div)->
+boxplot= (dataElement, div, min, max)->
     console.log "enter"
     name = dataElement.name
     data = dataElement.data
-    y_padding = 15
+    if data.count is 1
+        display_name = dataElement.groupVal
+        display_value = dataElement.data.min
+        dataElement.data = {}
+        dataElement.data[display_name]=display_value
+        return barchart(dataElement, div, min, max)
+    
+    if dataElement.groupKey is ""
+        str = "" + dataElement.name
+    else
+        str = "" + dataElement.name + " grouped by " + dataElement.groupKey
+    Session.set("titles", "Box Plot of " + str)
+
+    y_padding = 20
     x_padding = 20
     font = 10
-    max = maxing(dataElement.data)
     display = ['min','25%','50%','75%','max']
     
     width = 200
@@ -172,13 +255,29 @@ boxplot= (dataElement, div)->
             .attr('height',height)
             
     y_scale = d3.scale.linear()
-		        .domain([data.min, data.max])
+		        .domain([min, max])
 		        .range([height-y_padding, y_padding])
 
     y_axis = d3.svg.axis()
                 .scale(y_scale)
                 .orient("left")
                 .ticks(5)
+
+    svg.append("text")
+        .text(name)
+        .attr("x", "0")
+        .attr("y", y_padding/2)
+        .attr("font-family", "Monospace")
+        .attr("font-size", "15px")
+        .attr("fill", "black")
+
+    svg.append("text")
+        .text(dataElement.groupVal)
+        .attr('x', width/3)
+        .attr('y', height)
+        .attr("font-family", "Monospace")
+        .attr("font-size", 15 + "px")
+        .attr("fill", "black")
 
     svg.selectAll("text")
         .data(data_massage(data))
