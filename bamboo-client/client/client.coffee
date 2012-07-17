@@ -47,9 +47,6 @@ if root.Meteor.is_client
         Session.get('currentDatasetURL') and not Session.get('fields')
 
     #################INTRODUCTION###########################
-    root.Template.introduction.ready =->
-        Session.get('currentDatasetURL') and Session.get('fields')
-
     root.Template.introduction.num_cols =->
         Session.get('fields').length
 
@@ -77,8 +74,9 @@ if root.Meteor.is_client
 
     #####################Control-Panel##################
     root.Template.control_panel.active = ->
-        #Session.get('currentDatasetURL') and Session.get('fields') and not Session.get('graph')
-        true
+        not Session.get('addNewGraphFlag')
+
+
     # have to write this code to make chosen recognized in jquery
     root.Template.control_panel.chosen= ->
         Meteor.defer(->
@@ -105,22 +103,27 @@ if root.Meteor.is_client
     root.Template.control_panel.waiting=->
         Session.get('waiting')
 
-    root.Template.control_panel.events= "click .btn": ->
-        group = $('#group-by').val()
-        view_field = $('#view').val()
-        url = Session.get('currentDatasetURL')
-        Meteor.call("summarize_by_group",[url,group])
-        Session.set('currentGroup', group)
-        Session.set('currentView', view_field)
-        Session.set('waiting', true)
-        
-        frag = Meteor.ui.render( ->
-            return Template.graph({
-                field: view_field
-                group: group
-            })
-        )
-        $(".graph_area")[0].appendChild(frag)
+    root.Template.control_panel.events= {
+        "click #chartBtn": ->
+            group = $('#group-by').val()
+            view_field = $('#view').val()
+            url = Session.get('currentDatasetURL')
+            Meteor.call("summarize_by_group",[url,group])
+            Session.set('currentGroup', group)
+            Session.set('currentView', view_field)
+            Session.set('waiting', true)
+            
+            frag = Meteor.ui.render( ->
+                return Template.graph({
+                    field: view_field
+                    group: group
+                })
+            )
+            $(".graph_area")[0].appendChild(frag)
+
+        "click #addNewGraphBtn": ->
+            Session.set('addNewGraphFlag', false)
+    }
 
     root.Template.control_panel.charting =->
         #todo: move summarize_by_group here?
@@ -131,6 +134,7 @@ if root.Meteor.is_client
                 if summary
                     Meteor.call('field_charting')
                     Session.set('waiting', false)
+                    Session.set('addNewGraphFlag', true)
                     clearInterval(fieldInterval)
             ,1000)
         ""

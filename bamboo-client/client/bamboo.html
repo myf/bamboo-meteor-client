@@ -68,8 +68,6 @@
 </template>
 
 <template name="introduction">
-{{#if ready}}
-    
 <div class="well span8 offset1">
     <p>You are accessing the dataset from {{url}}</p> 
     <p>There are {{num_cols}} fields you can choose to chart</p>
@@ -92,7 +90,6 @@
         </div>
     {{/if}}
 </div>
-{{/if}}
 </template>
 
 <template name="control_panel">
@@ -129,6 +126,7 @@
             {{/if}}
     {{else}}
         <div class="btn pull-right" id="addNewGraphBtn">
+            Add a New Graph
         </div>
     {{/if}}
 </div>
