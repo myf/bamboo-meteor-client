@@ -76,9 +76,9 @@ if root.Meteor.is_client
         Session.get('fields').length < 6 or Session.get('show_all')
 
     #####################Control-Panel##################
-    root.Template.control_panel.show = ->
-        #if there is currentDatasetURL in session-> show
-        Session.get('currentDatasetURL') and Session.get('fields') and not Session.get('graph')
+    root.Template.control_panel.active = ->
+        #Session.get('currentDatasetURL') and Session.get('fields') and not Session.get('graph')
+        true
     # have to write this code to make chosen recognized in jquery
     root.Template.control_panel.chosen= ->
         Meteor.defer(->
@@ -102,6 +102,9 @@ if root.Meteor.is_client
     root.Template.control_panel.num_graph= ->
         20
     
+    root.Template.control_panel.waiting=->
+        Session.get('waiting')
+
     root.Template.control_panel.events= "click .btn": ->
         group = $('#group-by').val()
         view_field = $('#view').val()
@@ -109,26 +112,17 @@ if root.Meteor.is_client
         Meteor.call("summarize_by_group",[url,group])
         Session.set('currentGroup', group)
         Session.set('currentView', view_field)
-        Session.set('graph', false)
+        Session.set('waiting', true)
+        
+        frag = Meteor.ui.render( ->
+            return Template.graph({
+                field: view_field
+                group: group
+            })
+        )
+        $(".graph_area")[0].appendChild(frag)
 
-    ##################WAITING_GRAPH######################
-    root.Template.waiting_graph.exist =->
-        exist  = Session.get('graph')
-
-    root.Template.waiting_graph.titles =->
-        Session.get("titles")
-
-    #####################GRAPH#######################333
-    root.Template.graph.show=->
-        url = Session.get('currentDatasetURL')
-        group = Session.get('currentGroup')
-        view = Session.get('currentView')
-        url and view
-
-    root.Template.graph.field =->
-        div = Session.get('currentView')
-    
-    root.Template.graph.charting =->
+    root.Template.control_panel.charting =->
         #todo: move summarize_by_group here?
         #todo: use async to serize sum & charting
         fieldInterval = setInterval(->
@@ -136,17 +130,11 @@ if root.Meteor.is_client
                 summary = Summaries.findOne( {groupKey : Session.get('currentGroup')} )
                 if summary
                     Meteor.call('field_charting')
-                    Session.set('graph', true)
+                    Session.set('waiting', false)
                     clearInterval(fieldInterval)
             ,1000)
         ""
 
-    ##########ADDNEW GRAPH#####################################
-    root.Template.add_new_graph.show =->
-        Session.get('graph')
-
-    root.Template.add_new_graph.events = "click #addGraphBtn":->
-        Session.set('add_new_graph_flag', true)
         
 ############# UI LIB #############################
 
@@ -188,14 +176,8 @@ Meteor.methods(
             boxplot(dataElement,div,min,max)
 
 
-    clear_graphs: ->
-        graph_divs = $('.gg_graph')
-        for item in graph_divs
-            $(item).empty()
-
 
     field_charting: ->
-        Meteor.call('clear_graphs')
         url = Session.get("currentDatasetURL")
         group = Session.get("currentGroup") ? "" #some fallback
         field = Session.get("currentView")
@@ -205,7 +187,7 @@ Meteor.methods(
             groupKey: group
             name: field
         .fetch()
-        div = "#" + field+"_graph"
+        div = "#" + field+"_"+group+"_graph"
         max_arr = item_list.map (item)->
             if item.name in groupable
                 maxing(item.data)
