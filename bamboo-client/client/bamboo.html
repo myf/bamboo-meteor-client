@@ -125,8 +125,8 @@
                 {{charting}}
             {{/if}}
     {{else}}
-        <div class="btn pull-right" id="addNewGraphBtn">
-            Add a New Graph
+        <div class="btn btn-large pull-right" id="addNewGraphBtn">
+            <h3>Add a New Graph</h3>
         </div>
     {{/if}}
 </div>
@@ -138,7 +138,11 @@
 </template>
  
 <template name="graph">
-<div class="well span8 offset1">
+<div class="well span8 offset1" id="{{field}}_{{group}}_block">
+    <div class="pull-right" id="{{field}}_{{group}}_btn">
+        <img class="pointer deletionBtn" src="deletion.svg"></img>
+    </div>
+        <h3> {{title}} </h3>
         <div class="d3_graph" id="{{field}}_{{group}}_graph"></div>
 </div>
 </template>

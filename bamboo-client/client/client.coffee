@@ -2,12 +2,6 @@ root = global ? window
 bambooUrl = "/"
 observationsUrl = bambooUrl + "datasets"
 
-constants =
-    #defaultURL : 'http://formhub.org/education/forms/schooling_status_format_18Nov11/data.csv'
-    defaultURL : 'https://www.dropbox.com/s/0m8smn04oti92gr/sample_dataset_school_survey.csv?dl=1'
-    #defaultURL : 'http://localhost:8000/education/forms/schooling_status_format_18Nov11/data.csv'
-    #defaultURL : 'http://formhub.org/mberg/forms/good_eats/data.csv'
-
 
 ############ UI LOGIC ############################
 if root.Meteor.is_client
@@ -107,14 +101,31 @@ if root.Meteor.is_client
         "click #chartBtn": ->
             group = $('#group-by').val()
             view_field = $('#view').val()
+
+            #check whether graph exists already
+            if Session.get(view_field + '_' + group)
+                alert "Graph already exists"
+                return
+
             url = Session.get('currentDatasetURL')
             Meteor.call("summarize_by_group",[url,group])
             Session.set('currentGroup', group)
             Session.set('currentView', view_field)
             Session.set('waiting', true)
+            Session.set(view_field + '_' + group, true)
             
+            #TODO: if the count = 1 when drawing box plot
+            title = ""
+            if view_field in Session.get('groupable_fields')
+                title = "Bar Chart of "
+            else
+                title = "Box Plot of "
+            title = title + view_field
+            if group != ""
+                title = title + " group by " + group
             frag = Meteor.ui.render( ->
                 return Template.graph({
+                    title: title
                     field: view_field
                     group: group
                 })
@@ -138,7 +149,7 @@ if root.Meteor.is_client
                     clearInterval(fieldInterval)
             ,1000)
         ""
-
+    #########GRAPH###############################
         
 ############# UI LIB #############################
 
@@ -174,6 +185,7 @@ Meteor.methods(
     make_single_chart: (obj) ->
         [div, dataElement, min, max] =obj
         #chart based on groupable property
+        console.log div
         if dataElement.name in Session.get("groupable_fields")
             barchart(dataElement,div,min,max)
         else
@@ -191,19 +203,23 @@ Meteor.methods(
             groupKey: group
             name: field
         .fetch()
-        div = "#" + field+"_"+group+"_graph"
+
+        div = $("#" + field+"_"+group+"_graph").get(0)
+        console.log "before max / min"
         max_arr = item_list.map (item)->
             if item.name in groupable
                 maxing(item.data)
             else
                 item.data.max
         max = _.max(max_arr)
+        console.log max
         min_arr = item_list.map (item)->
             if item.name in groupable
                 mining(item.data)
             else
                 item.data.min
         min = _.min(min_arr)
+        console.log min
         for item in item_list
             Meteor.call("make_single_chart", [div, item, min, max])
 
