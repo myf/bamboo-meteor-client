@@ -13,6 +13,10 @@ if root.Meteor.is_client
 
     ###################URL-Entry###########################
     root.Template.url_entry.events = "click .btn": ->
+        if Session.get('currentDatasetURL')
+            keys = Session.keys
+            for item of keys
+                Session.set(item, false)
         url = $('#dataSourceURL').val()
         Session.set('currentDatasetURL', url)
         #Meteor.call('chosen')
