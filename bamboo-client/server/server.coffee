@@ -25,12 +25,25 @@ Meteor.methods(
                     form: {url: url}
                 request post_options, (e, b, response) ->
                     Fiber(->
-                        unless Datasets.findOne({url: url})
-                            Datasets.insert
-                                bambooID: JSON.parse(response).id
-                                url: url
-                                cached_at: Date.now()
-                            Meteor.call('insert_schema', url)
+                        if b.statusCode is 200
+                            r = JSON.parse(response)
+                            if r.error is undefined
+                                unless Datasets.findOne({url: url})
+                                    Datasets.insert
+                                        bambooID: r.id
+                                        url: url
+                                        cached_at: Date.now()
+                                    Meteor.call('insert_schema', url)
+                            else
+                                console.log "error message: " + r.error
+                                Meteor.publish "message", ->
+                                    Message
+                                        message:"error message: " + r.error
+                        else
+                            console.log "bad status" + b.statusCode
+                            Meteor.publish "message", ->
+                                Message
+                                    message:"bad status: " + b.status +"\nYou have ill formated csv file"
                     ).run()
 
     insert_schema: (datasetURL) ->
