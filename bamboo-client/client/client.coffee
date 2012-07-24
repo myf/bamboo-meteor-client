@@ -11,6 +11,9 @@ if root.Meteor.is_client
     root.Template.body_render.show =->
         Session.get('currentDatasetURL') and Session.get('fields')
 
+    root.Template.error_message.message =->
+        "hi"
+
     ###################URL-Entry###########################
     root.Template.url_entry.events = "click .btn": ->
         if Session.get('currentDatasetURL')
@@ -23,7 +26,7 @@ if root.Meteor.is_client
         if !Datasets.findOne(url: url)
             console.log "caching server side.."
             #todo: add async to serize register & get_fields
-            Meteor.call('register_dataset', url, ->
+            Meteor.call('register_dataset', url, ()->
                 interval = setInterval(->
                     #Meteor.call("get_fields", url)
                     #if Session.get('fields')

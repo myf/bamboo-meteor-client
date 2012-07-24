@@ -13,6 +13,10 @@
         <div id="d3select"></div>
     </div>
 </body>
+
+<template name="error_message">
+{{message}}
+</template>
             
 <template name="body_render">
 {{#if show}}
@@ -60,6 +64,9 @@
 
 <template name="processing">
 {{#if ready}}
+    <div class="error_message">
+        {{> error_message}}
+    </div>
     <div class="well span8 offset1">
         <h1>Preparing your dataset, just a split second..</h1>
     <img src="drop.gif">

@@ -16,6 +16,7 @@ Meteor.methods(
     register_dataset: (url) ->
         if url is null
             console.log "null url! discard!"
+            throw new Meteor.Error(404, "blablablah")
         else
             console.log "server received url " + url
             unless Datasets.findOne({url: url})
@@ -24,27 +25,21 @@ Meteor.methods(
                     method: 'POST'
                     form: {url: url}
                 request post_options, (e, b, response) ->
-                    Fiber(->
-                        if b.statusCode is 200
-                            r = JSON.parse(response)
-                            if r.error is undefined
+                    if b.statusCode is 200
+                        r = JSON.parse(response)
+                        if r.error is undefined
+                            Fiber(->
                                 unless Datasets.findOne({url: url})
                                     Datasets.insert
                                         bambooID: r.id
                                         url: url
                                         cached_at: Date.now()
                                     Meteor.call('insert_schema', url)
-                            else
-                                console.log "error message: " + r.error
-                                Meteor.publish "message", ->
-                                    Message
-                                        message:"error message: " + r.error
+                            ).run()
                         else
-                            console.log "bad status" + b.statusCode
-                            Meteor.publish "message", ->
-                                Message
-                                    message:"bad status: " + b.status +"\nYou have ill formated csv file"
-                    ).run()
+                            console.log "error message: " + r.error
+                    else
+                        console.log "bad status" + b.statusCode
 
     insert_schema: (datasetURL) ->
         dataset = Datasets.findOne(url: datasetURL)
