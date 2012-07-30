@@ -51,6 +51,9 @@ if root.Meteor.is_client
     root.Template.introduction.num_cols =->
         Session.get('fields').length
 
+    root.Template.introduction.url =->
+        Session.get('currentDatasetURL')
+
     root.Template.introduction.schema =->
         schema = Session.get('schema')
         _.values schema
