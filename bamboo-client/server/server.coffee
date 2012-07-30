@@ -3,20 +3,35 @@ require = __meteor_bootstrap__.require
 request = require 'request'
 #bambooURL = 'http://localhost:8080'
 #bambooURL = 'http://bamboo.modilabs.org/'
-#bambooURL = 'http://bamboo.io/'
-bambooURL = 'http://starscream.modilabs.org:8080/'
+bambooURL = 'http://bamboo.io/'
+#bambooURL = 'http://starscream.modilabs.org:8080/'
 datasetsURL = bambooURL + '/datasets'
 summaryURLf = (id,group) -> datasetsURL + '/' + id + '/summary' +
     if group then '?group=' + group else ''
 
 schemaURLf = (id) -> datasetsURL + '/' + id + '/info'
 
+###########PUBLISHES##########################
+Meteor.publish "datasets", (url)->
+    Datasets.find
+        url:url
+
+Meteor.publish "schemas", (url)->
+    Schemas.find
+        datasetURL:url
+
+Meteor.publish "summaries", (url,group, view)->
+    Summaries.find
+        datasetURL:url
+        groupVal:group
+        name:view
+        
+
 #Note: methods can live anywhere, regardless of server or client
 Meteor.methods(
     register_dataset: (url) ->
         if url is null
             console.log "null url! discard!"
-            throw new Meteor.Error(404, "blablablah")
         else
             console.log "server received url " + url
             unless Datasets.findOne({url: url})
@@ -118,4 +133,28 @@ Meteor.methods(
                                                 datasetURL: datasetURL
                                             Fiber( -> Summaries.insert res).run()
                 )
+
+    summarized_by_total_non_recurse:(obj)->
+        [datasetURL, groupkey] = obj
+        dataset = Datasets.findOne(url: datasetURL)
+        # check if dataset valid
+        if !(dataset)
+            console.log datasetURL, groupkey
+            console.log "no dataset yet, get your summary dataset first"
+            #TODO:publish this error message to the front
+        else
+            datasetID = dataset._id
+            bambooID = dataset.bambooID
+            if Summaries.findOne(datasetID: datasetID, groupKey: groupkey)
+                console.log("summary with datasetID " + datasetID +
+                    " and groupkey " + groupkey + " is already cached")
+                #TODO: would we want to push this to client?
+            else
+                groupKey = groupkey
+                request.get summaryURLf(bambooID, groupkey), (error, body, response) ->
+                    if error
+                        console.log error
+                    else
+                        obj = JSON.parse(response)
+                        Fiber(-> Norecurse.insert obj).run()
 )
