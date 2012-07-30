@@ -3,9 +3,18 @@ bambooUrl = "/"
 observationsUrl = bambooUrl + "datasets"
 
 
-############ UI LOGIC ############################
+#############SUBSCRIBE#######################
 if root.Meteor.is_client
-    
+    Meteor.startup ->
+        Meteor.autosubscribe ->
+            url = Session.get("currentDatasetURL")
+            group = Session.get("currentGroup")
+            view = Session.get("currentView")
+            Meteor.subscribe "datasets", url
+            Meteor.subscribe "schemas", url
+            Meteor.subscribe "summaries", url, group, view
+         
+############ UI LOGIC ############################
     #every function can be accessed by the template it is defined under
     ##################BODY RENDER#####################
     root.Template.body_render.show =->
@@ -63,12 +72,13 @@ if root.Meteor.is_client
         arr = _.values schema
         arr.slice(0,5)
 
-    root.Template.introduction.events= {
+
+    root.Template.introduction.events=
         "click #moreBtn": ->
             Session.set('show_all', true)
         "click #hideBtn": ->
             Session.set('show_all', false)
-    }
+    
 
     root.Template.introduction.long =->
         Session.get('fields').length > 5
@@ -119,6 +129,7 @@ if root.Meteor.is_client
 
             url = Session.get('currentDatasetURL')
             Meteor.call("summarize_by_group",[url,group])
+            #Meteor.call("summarized_by_total_non_recurse",[url,group])
             Session.set('currentGroup', group)
             Session.set('currentView', view_field)
             Session.set('waiting', true)
