@@ -24,8 +24,8 @@ nvd3BarChart = (dataElement, div) ->
     
         d3.select(div)
             .append("svg")
-            .attr("width",width)
-            .attr("height",height)
+            .attr("width", 400)
+            .attr("height", 250)
             .datum(dataset)
             .transition().duration(500)
             .call(chart)

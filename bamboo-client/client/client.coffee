@@ -13,7 +13,7 @@ if root.Meteor.is_client
             Meteor.subscribe "datasets", url
             Meteor.subscribe "schemas", url
             Meteor.subscribe "summaries", url, group, view
-         
+        
 ############ UI LOGIC ############################
     #every function can be accessed by the template it is defined under
     ##################BODY RENDER#####################
@@ -171,12 +171,40 @@ if root.Meteor.is_client
             ,1000)
         ""
     #########GRAPH###############################
-    root.Template.graph.events = "click .deletionBtn": ->
-        field = this.field
-        group = this.group
-        divstr = '#'+field+'_'+group+'_block'
-        Session.set(field+'_'+group, false)
-        $(divstr).remove()
+    root.Template.graph.events =
+        "click .deletionBtn": ->
+            field = this.field
+            group = this.group
+            divstr = '#'+field+'_'+group+'_block'
+            Session.set(field+'_'+group, false)
+            $(divstr).remove()
+        "click .downloadBtn": ->
+            field = this.field
+            group = this.group
+            divstr = '#' + field + '_' + group + '_graph'
+            svg = $(divstr).eq(0).html()
+            svg = svg.substring(0, 5) +
+                'xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ' +
+                svg.substring(5)
+            filename = field + '_' + group + '_graph'
+            loadScripts = []
+            unless BlobBuilder?
+                loadScripts.push($.getScript("https://raw.github.com/eligrey/BlobBuilder.js/master/BlobBuilder.min.js"))
+            unless saveAs?
+                loadScripts.push($.getScript("https://raw.github.com/eligrey/FileSaver.js/master/FileSaver.js"))
+            console.log loadScripts
+            $.when.apply(null, loadScripts).fail( ()->
+                console.log(typeof log, arguments)
+                alert('Error loading scripts')
+            ).done( ()->
+                if !BlobBuilder?
+                    alert("WTF")
+                blob = new BlobBuilder
+                blob.append(svg)
+                output = blob.getBlob("image/svg+xml;charset=" + document.characterSet)
+                saveAs(output, filename)
+            )
+
 
 ############# UI LIB #############################
 
