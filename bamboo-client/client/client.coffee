@@ -182,10 +182,15 @@ if root.Meteor.is_client
             field = this.field
             group = this.group
             divstr = '#' + field + '_' + group + '_graph'
-            svg = $(divstr).eq(0).html()
-            svg = svg.substring(0, 5) +
-                'xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ' +
-                svg.substring(5)
+            if $(divstr).children().length == 1
+                svg = $(divstr).eq(0).html()
+                svg = svg.substring(0, 5) +
+                    'xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ' +
+                    svg.substring(5)
+            else
+                svg = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">'
+                svg = svg + $(divstr).eq(0).html()
+                svg = svg + '</svg>'
             filename = field + '_' + group + '_graph'
             loadScripts = []
             unless BlobBuilder?
