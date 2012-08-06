@@ -30,6 +30,14 @@ Meteor.publish "summaries", (url,group, view)->
 #########METHODS################################
 #Note: methods can live anywhere, regardless of server or client
 Meteor.methods(
+    register_http: (url) ->
+        Meteor.http.call "POST", datasetsURL,
+            params:
+                url:url
+            ,(error, result)->
+                if result.statusCode is 200
+                    content = JSON.parse(result.content)
+                    console.log content.id
 
     register_dataset: (url) ->
         if url is null
@@ -37,26 +45,25 @@ Meteor.methods(
         else
             console.log "server received url " + url
             unless Datasets.findOne({url: url})
-                post_options =
-                    uri: datasetsURL
-                    method: 'POST'
-                    form: {url: url}
-                request post_options, (e, b, response) ->
-                    if b.statusCode is 200
-                        r = JSON.parse(cleanKeys(response))
-                        if r.error is undefined
-                            Fiber(->
-                                unless Datasets.findOne({url: url})
-                                    Datasets.insert
-                                        bambooID: r.id
-                                        url: url
-                                        cached_at: Date.now()
-                                    Meteor.call('insert_schema', url)
-                            ).run()
+                Meteor.http.call "POST", datasetsURL,
+                    params:
+                        url:url
+                    , (error, result)->
+                        if result.statusCode is 200
+                            r = JSON.parse(cleanKeys(result.content))
+                            if error is null
+                                Fiber(->
+                                    unless Datasets.findOne({url: url})
+                                        Datasets.insert
+                                            bambooID: r.id
+                                            url: url
+                                            cached_at: Date.now()
+                                        Meteor.call('insert_schema', url)
+                                ).run()
+                            else
+                                console.log "error message: " + error
                         else
-                            console.log "error message: " + r.error
-                    else
-                        console.log "bad status" + b.statusCode
+                            console.log "bad status" + result.statusCode
 
     insert_schema: (datasetURL) ->
         dataset = Datasets.findOne(url: datasetURL)
@@ -71,11 +78,11 @@ Meteor.methods(
                 console.log("schema with datasetID " + datasetID +
                     " and bambooID " + bambooID + " is already cached")
             else
-                request.get(schemaURLf(bambooID), (error, body, response) ->
-                    if error
+                Meteor.http.call "GET", schemaURLf(bambooID), (error, result)->
+                    if not(error is null)
                         console.log error
                     else
-                        obj = JSON.parse(cleanKeys(response))
+                        obj = JSON.parse(cleanKeys(result.content))
                         updateTime = obj['updated_at']
                         createTime = obj['created_at']
                         schema = obj['schema']
@@ -86,7 +93,6 @@ Meteor.methods(
                             datasetID : datasetID
                             datasetURL : datasetURL
                         Fiber( -> Schemas.insert res).run()
-                )
 
     summarize_by_group: (obj) ->
         # tease out individual summary objects from bamboo output + store
@@ -104,11 +110,11 @@ Meteor.methods(
                     " and groupkey " + groupkey + " is already cached")
             else
                 groupKey = groupkey
-                request.get(summaryURLf(bambooID, groupkey), (error, body, response) ->
-                    if error
+                Meteor.http.call "GET", summaryURLf(bambooID, groupkey),(error,result)->
+                    if not(error is null)
                         console.log error
                     else
-                        obj = JSON.parse(cleanKeys(response))
+                        obj = JSON.parse(cleanKeys(result.content))
                         if groupKey is ""
                             for field of obj
                                 res=
@@ -134,7 +140,6 @@ Meteor.methods(
                                                 datasetID: datasetID
                                                 datasetURL: datasetURL
                                             Fiber( -> Summaries.insert res).run()
-                )
 
     summarized_by_total_non_recurse:(obj)->
         [datasetURL, groupkey] = obj
