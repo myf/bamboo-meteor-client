@@ -30,28 +30,26 @@ Meteor.publish "summaries", (url,group, view)->
 #########METHODS################################
 #Note: methods can live anywhere, regardless of server or client
 Meteor.methods(
-    register_http: (url) ->
-        Meteor.http.call "POST", datasetsURL,
-            params:
-                url:url
-            ,(error, result)->
-                if result.statusCode is 200
-                    content = JSON.parse(result.content)
-                    console.log content.id
 
     register_dataset: (url) ->
-        if url is null
+        if (url is null) or (url is "")
             console.log "null url! discard!"
+            throw new Meteor.Error 404, "alex sucks"
         else
             console.log "server received url " + url
             unless Datasets.findOne({url: url})
-                Meteor.http.call "POST", datasetsURL,
+                result = Meteor.http.call "POST", datasetsURL,
                     params:
                         url:url
-                    , (error, result)->
+                try
+                    if result.error is null
                         if result.statusCode is 200
                             r = JSON.parse(cleanKeys(result.content))
-                            if error is null
+                            if r.error
+                                msg = "bamboo error message: " + r.error
+                                console.log msg
+                                throw new Meteor.Error 404, msg
+                            else
                                 Fiber(->
                                     unless Datasets.findOne({url: url})
                                         Datasets.insert
@@ -60,10 +58,17 @@ Meteor.methods(
                                             cached_at: Date.now()
                                         Meteor.call('insert_schema', url)
                                 ).run()
-                            else
-                                console.log "error message: " + error
                         else
-                            console.log "bad status" + result.statusCode
+                            msg = "bad status" + result.statusCode
+                            console.log msg
+                            throw new Meteor.Error 404, msg
+                    else
+                        msg = "Meteor http error: "+ result.error
+                        console.log msg
+                        throw new Meteor.Error 404, msg
+                catch error
+                    throw error
+
 
     insert_schema: (datasetURL) ->
         dataset = Datasets.findOne(url: datasetURL)

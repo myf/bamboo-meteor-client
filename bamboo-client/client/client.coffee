@@ -7,22 +7,16 @@ observationsUrl = bambooUrl + "datasets"
 if root.Meteor.is_client
     #Meteor.startup ->
          
-    cleanKeys= (obj)->
-        for key, val of obj
-            if key.match(/\./)
-                key.replace(/\./,"_")
-            cleanKeys(val)
 ############ UI LOGIC ############################
     #every function can be accessed by the template it is defined under
     ##################BODY RENDER#####################
     root.Template.body_render.show =->
         Session.get('currentDatasetURL') and Session.get('fields')
 
-    root.Template.error_message.message =->
-        "hi"
-
     ###################URL-Entry###########################
     root.Template.url_entry.events = "click .btn": ->
+        Backbone.history.navigate($('#dataSourceURL').val(), true)
+        ###
         if Session.get('currentDatasetURL')
             keys = Session.keys
             for item of keys
@@ -46,7 +40,8 @@ if root.Meteor.is_client
         else
             console.log "already cached server side.."
             Meteor.call("get_fields",url)
-    
+        ###
+
     root.Template.url_entry.current_dataset_url = ->
         Session.get('currentDatasetURL')
 

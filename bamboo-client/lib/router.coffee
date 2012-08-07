@@ -14,7 +14,9 @@ if Meteor.is_client
                 #Meteor.call('chosen')
                 console.log "caching server side.."
                 #todo: add async to serize register & get_fields
-                Meteor.call('register_dataset', url, ()->
+                Meteor.call('register_dataset', url, (error, result)->
+                    if error
+                        alert error.reason
                     interval = setInterval(->
                         #Meteor.call("get_fields", url)
                         #if Session.get('fields')
@@ -24,6 +26,7 @@ if Meteor.is_client
                             clearInterval(interval)
                     ,300)
                 )
+            else
                 console.log "already cached server side.."
                 Meteor.call("get_fields",url)
                 
