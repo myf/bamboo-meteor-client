@@ -105,7 +105,7 @@
             more      
         </div>
     {{/if}}
-    <p> ---- : Field with * is groupable field.</p>
+    <p> Field with * is groupable field.</p>
 </div>
 </template>
 
@@ -116,23 +116,27 @@
                 <h3>Graphing Control Panel</h3>
             </div>
             <div class="row offset1">
-                <b>View</b>
-                {{chosen}}
-                <select class="chosen" id="view" >
-                    {{#each fields}}
-                        <option>{{this}}</option>
-                    {{/each}}
-                </select>
-                <b>Group by</b>
-                <select data-placeholder="choose a group" class="chosen" id="group-by">
-                    <option></option>
-                    {{#each groups}}
-                        <option>{{this}}</option>
-                    {{/each}}
-                </select>
-                Generate
-                {{num_graph}}
-                graphs
+                <p>
+                    <b>View</b>
+                    {{chosen}}
+                    <select class="chosen" id="view" >
+                        {{#each fields}}
+                            <option>{{this}}</option>
+                        {{/each}}
+                    </select>
+                    <b>Group by</b>
+                    <select data-placeholder="choose a group" class="chosen" id="group-by">
+                        <option></option>
+                        {{#each groups}}
+                            <option>{{this}}</option>
+                        {{/each}}
+                    </select>
+                </p>
+                <p class="pull-right">
+                    Generate
+                    {{num_graph}}
+                    graphs
+                </p>
                 <div class="btn pull-right" id="chartBtn">
                     Chart        
                 </div>

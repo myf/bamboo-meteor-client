@@ -1,6 +1,7 @@
 /* CSS declarations go here */
 body{
-    background:#CCE89B;
+/*    background:#CCE89B;
+*/    background: rgba(1, 1, 1, 0.01);
 }
 input{
     width:300px;
