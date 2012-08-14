@@ -58,7 +58,11 @@ if root.Meteor.is_client
 
     root.Template.introduction.schema =->
         schema = Session.get('schema')
-        _.values schema
+        schema_list = _.values schema
+        for item in schema_list
+            if item.simpletype is "string"
+                item.label = item.label+" *"
+        schema_list
 
     root.Template.introduction.schema_less =->
         schema = Session.get('schema')
@@ -128,9 +132,6 @@ if root.Meteor.is_client
                 title = "Bar Chart of "
             else
                 title = "Box Plot of "
-            title = title + view_field
-            if group != ""
-                title = title + " group by " + group
             frag = Meteor.ui.render( ->
                 return Template.graph({
                     title: title

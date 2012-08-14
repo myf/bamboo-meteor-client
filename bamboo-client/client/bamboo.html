@@ -137,11 +137,11 @@
 <div class="well span8 offset1" id="{{field}}_{{group}}_block">
     <div class="page-header"> 
         <div class="pull-right" id="{{field}}_{{group}}_btn">
-                <img class="pointer downloadBtn" src="download.svg"></img>
+            <div class="btn pointer downloadBtn"><img src="download-icon.svg" id="download_btn_img"></img>Download Chart</div>
             &nbsp
-            <img class="pointer deletionBtn" src="deletion.svg"></img>
+            <div class="btn pointer deletionBtn" src="deletion.svg">Close</div>
         </div>
-        <h3> {{title}} </h3>
+        <h3 id="graph_title">{{title}}<b>{{field}}</b>{{#if group}} grouped by <b>{{group}}</b>{{/if}}</h3>
     </div>
         <div class="d3_graph" id="{{field}}_{{group}}_graph"></div>
 </div>

@@ -74,15 +74,7 @@ input{
     cursor:pointer;
 }
 
-.deletionBtn {
-    width:20px;
-    height:20px;
-}
 
-.downloadBtn {
-    width:20px;
-    height:20px;
-}
 .brand {
     font-size: 15px;
 }
@@ -105,5 +97,15 @@ input{
 .boxplot_title {
     font-family: "sans-serif";
     font-size: 16px;
+}
+
+#graph_title {
+    font-weight:normal;
+}
+#download_btn_img {
+    width: 17px;
+    height: 17px;
+    opacity:0.5;
+    margin-top: -7px;
 }
 
