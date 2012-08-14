@@ -260,9 +260,12 @@ barchart= (dataElement, div, min, max)->
         .call(y_axis)
                 
 boxplot= (dataElement, div, min, max)->
-    console.log "box plot a a a enter"
     name = dataElement.name
     data = dataElement.data
+    if (dataElement.groupKey is "") and (dataElement.groupVal is "")
+        title = name + "(" + data.count + ")"
+    else
+        title = dataElement.groupKey + " : " + dataElement.groupVal + "(" + data.count + ")"
     if data.count is 1
         console.log "data.count is one"
         display_name = dataElement.groupVal
@@ -272,7 +275,9 @@ boxplot= (dataElement, div, min, max)->
         return nvd3BarChart(dataElement, div)
     
 
-    y_padding = 20
+    y_padding_1 = 30
+    y_padding_2 = 20
+    y_padding = y_padding_1+y_padding_2
     x_padding = 20
     font = 10
     display = ['min','25%','50%','75%','max']
@@ -287,25 +292,38 @@ boxplot= (dataElement, div, min, max)->
             
     y_scale = d3.scale.linear()
 		        .domain([min, max])
-		        .range([height-y_padding, y_padding])
+		        .range([height-y_padding_1, y_padding])
 
     y_axis = d3.svg.axis()
                 .scale(y_scale)
                 .orient("left")
                 .ticks(5)
 
+    #add the title
+    svg.append("text")
+        .text(title)
+        .attr("x",x_padding)
+        .attr("y", y_padding_1/2)
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "16px")
+        .attr("class","boxplot_title")
+        .attr("fill", "black")
+
+
+    #y_axis label
     svg.append("text")
         .text(name)
         .attr("x", "0")
-        .attr("y", y_padding/2)
+        .attr("y", (y_padding_1+y_padding_2/2) )
         .attr("font-family", "Monospace")
         .attr("font-size", "15px")
         .attr("fill", "black")
 
+    #name of the variable
     svg.append("text")
         .text(dataElement.groupVal)
         .attr('x', width/3)
-        .attr('y', height)
+        .attr('y', height-y_padding_1/2)
         .attr("font-family", "Monospace")
         .attr("font-size", 15 + "px")
         .attr("fill", "black")

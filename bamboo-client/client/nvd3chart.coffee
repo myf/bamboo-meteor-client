@@ -1,9 +1,15 @@
 nvd3BarChart = (dataElement, div) ->
+    count = 0
     str = "Bar Chart of " + dataElement.name
     arr = []
     for key of dataElement.data
         arr.push( { label : key, value : dataElement.data[key]})
+        count += dataElement.data[key]
     dataset = [ { key : str, values: arr }]
+    if (dataElement.groupKey is "") and (dataElement.groupVal is "")
+        title = dataElement.name + "(" + count + ")"
+    else
+        title = dataElement.groupKey + " : " + dataElement.groupVal + "(" + count + ")"
 
     nv.addGraph( () ->
         width = 400
@@ -21,11 +27,18 @@ nvd3BarChart = (dataElement, div) ->
             .staggerLabels(true)
             .tooltips(false)
             .showValues(true)
-    
-        d3.select(div)
+
+        svg = d3.select(div)
             .append("svg")
             .attr("class", "barChartSVG")
-            .datum(dataset)
+           
+        svg.append("text")
+            .text(title)
+            .attr("x", 100)
+            .attr("y", 12)
+            .attr("class", "boxplot_title")
+            .attr("fill", "black")
+        svg.datum(dataset)
             .transition().duration(500)
             .call(chart)
 

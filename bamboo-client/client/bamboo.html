@@ -35,22 +35,6 @@
 
 <template name="url_entry">
     {{#if current_dataset_url}}
-    <div class='navbar navbar-fixed-top url'>
-        <div class="navbar-inner">
-            <div class="container">
-                <div class="pull-left"> <a class="brand" href="http://bamboo.io/"><b> Bamboo.io</b> </a>
-                    <img class="logoImg" src="logo.svg"/>  
-                </div>
-                <div class="pull-right">
-                    <input id="dataSourceURL" type="text"
-                            value="{{current_dataset_url}}"></input>
-                    <div class="btn" id="submitURL">
-                        Submit
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     {{else}} 
 
     <div class = 'logo_bamboo'>

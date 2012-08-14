@@ -59,7 +59,7 @@ input{
     margin-left:20px;
 }
 .mainbody {
-    margin:50px;
+    margin:5px;
 }
 
 .borderset {
@@ -100,6 +100,10 @@ input{
 
 .barChartSVG {
     width: 400px;
-    height: 250px;
+    height: 270px;
+}
+.boxplot_title {
+    font-family: "sans-serif";
+    font-size: 16px;
 }
 
