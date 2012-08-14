@@ -60,7 +60,7 @@ if root.Meteor.is_client
         schema = Session.get('schema')
         schema_list = _.values schema
         for item in schema_list
-            if item.simpletype is "string"
+            if (item.simpletype is "string") and (not item.label.match /.*\*$/)
                 item.label = item.label+" *"
         schema_list
 
