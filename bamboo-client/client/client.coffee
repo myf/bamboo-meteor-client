@@ -220,18 +220,22 @@ Meteor.methods(
         group_by = Session.get('currentGroup')
         visible_fields = []
         for item in fields
-            obj=
-                field: item
-                group_by: group_by
-            visible_fields.push(obj)
+            #no underscore prefix
+            if not item.match /^_.*/
+                obj=
+                    field: item
+                    group_by: group_by
+                visible_fields.push(obj)
         Session.set("visible_fields",visible_fields)
 
     generate_groupable_fields: ->
         schema = Session.get('schema')
         fin = []
         for item of schema
-            if schema[item]['olap_type'] == 'dimension'
-                fin.push(item)
+            #no underscore prefix
+            if not item.match /^_.*/
+                if schema[item]['olap_type'] == 'dimension'
+                    fin.push(item)
 
         Session.set('groupable_fields',fin)
     

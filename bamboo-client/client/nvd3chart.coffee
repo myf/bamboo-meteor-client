@@ -6,6 +6,7 @@ nvd3BarChart = (dataElement, div) ->
         arr.push( { label : key, value : dataElement.data[key]})
         count += dataElement.data[key]
     dataset = [ { key : str, values: arr }]
+    
     if (dataElement.groupKey is "") and (dataElement.groupVal is "")
         title = dataElement.name + "(" + count + ")"
     else
@@ -35,7 +36,7 @@ nvd3BarChart = (dataElement, div) ->
         svg.append("text")
             .text(title)
             .attr("x", 100)
-            .attr("y", 12)
+            .attr("y", 11)
             .attr("class", "boxplot_title")
             .attr("fill", "black")
         svg.datum(dataset)
