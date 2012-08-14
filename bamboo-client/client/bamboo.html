@@ -60,36 +60,32 @@
 
 <template name="introduction">
 <div class="well span8 offset1">
-    <div class="page-header"> 
-        <h3> Introducion about Your File </h3> 
-    </div>
-    <p><b>You</b> are accessing the dataset from <a href="{{url}}"> {{url}}</a>.</p> 
-    <p><b>{{num_cols}} view fields</b> in the dataset you can choose to chart : </p>
-    {{#if show_all}}
-        <p>
-        {{#each schema}}
-        <a href="http://www.google.com?id={{label}}">{{label}}</a>
-        ,&nbsp&nbsp&nbsp&nbsp
-        {{/each}}
-        </p>
-        {{#if long}}
+    <div class="row">
+        <div class="span6">
+        dataset: <a href="{{url}}"> {{url}}</a>
+        </div>
+        {{#if show_field}}
             <div class="btn pull-right" id="hideBtn">
-                hide
+                Hide view fields
+            </div>
+        {{else}}
+            <div class="btn pull-right" id="moreBtn">
+            Show view fields      
             </div>
         {{/if}}
-    {{else}}
-        <p> show 5 entries, or click the button to show all </p>
+    </div>
+
+    {{#if show_field}}
+    <p><b>{{num_cols}} view fields</b></p>
         <p>
-        {{#each schema_less}}
-        <a href="http://www.google.com?id={{label}}"> {{label}} {{simpletype}} </a>
+        {{#each schema}}
+        {{label}}
         ,&nbsp&nbsp&nbsp&nbsp
         {{/each}}
         </p>
-        <div class="btn pull-right" id="moreBtn">
-            more      
-        </div>
+        <p> * denotes groupable field.</p>
     {{/if}}
-    <p> Field with * is groupable field.</p>
+    </p>
 </div>
 </template>
 

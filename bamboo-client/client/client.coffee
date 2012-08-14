@@ -67,16 +67,13 @@ if root.Meteor.is_client
 
     root.Template.introduction.events=
         "click #moreBtn": ->
-            Session.set('show_all', true)
+            Session.set('show_field', true)
         "click #hideBtn": ->
-            Session.set('show_all', false)
-    
+            Session.set('show_field', false)
 
-    root.Template.introduction.long =->
-        Session.get('fields').length > 5
+    root.Template.introduction.show_field=->
+        Session.get("show_field")
 
-    root.Template.introduction.show_all =->
-        Session.get('fields').length < 6 or Session.get('show_all')
 
     #####################Control-Panel##################
     root.Template.control_panel.active = ->
