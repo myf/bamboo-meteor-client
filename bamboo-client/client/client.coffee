@@ -103,8 +103,6 @@ if root.Meteor.is_client
         Meteor.call('generate_groupable_fields')
         fields = Session.get('groupable_fields')
 
-    root.Template.control_panel.num_graph= ->
-        20
     
     root.Template.control_panel.waiting=->
         Session.get('waiting')
@@ -143,7 +141,7 @@ if root.Meteor.is_client
                     group: group
                 })
             )
-            $(".graph_area")[0].appendChild(frag)
+            $(".graph_area")[0].insertBefore(frag,$(".graph_area")[0].childNodes[0])
 
         "click #addNewGraphBtn": ->
             Session.set('addNewGraphFlag', false)

@@ -21,9 +21,9 @@
 <template name="body_render">
 {{#if show}}
     {{> introduction}}
+    {{> control_panel}}
     <div class="graph_area">
     </div>
-    {{> control_panel}}
 {{/if}}
 </template>
             
@@ -115,11 +115,6 @@
                             <option>{{this}}</option>
                         {{/each}}
                     </select>
-                </p>
-                <p class="pull-right">
-                    Generate
-                    {{num_graph}}
-                    graphs
                 </p>
                 <div class="btn pull-right" id="chartBtn">
                     Chart        
