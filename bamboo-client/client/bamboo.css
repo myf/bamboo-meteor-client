@@ -88,11 +88,13 @@ input{
 .boxPlotSVG {
     width: 200px;
     height: 300px;
+    display: inline;
 }
 
 .barChartSVG {
-    width: 400px;
+    width: 300px;
     height: 270px;
+    display: inline;
 }
 .boxplot_title {
     font-family: "sans-serif";

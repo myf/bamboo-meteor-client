@@ -287,7 +287,7 @@ boxplot= (dataElement, div, min, max)->
 
     console.log div
     svg = d3.select(div)
-            .append('svg:svg')
+            .append('svg')
             .attr('class', 'boxPlotSVG')
             
     y_scale = d3.scale.linear()

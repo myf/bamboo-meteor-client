@@ -13,7 +13,7 @@ nvd3BarChart = (dataElement, div) ->
         title = dataElement.groupKey + " : " + dataElement.groupVal + "(" + count + ")"
 
     nv.addGraph( () ->
-        width = 400
+        width = 300
         height = 250
         chart = nv.models.discreteBarChart()
             .width(width)
