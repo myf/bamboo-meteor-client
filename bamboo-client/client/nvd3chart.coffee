@@ -1,4 +1,4 @@
-nvd3BarChart = (dataElement, div) ->
+nvd3BarChart = (dataElement, div, min, max) ->
     count = 0
     str = "Bar Chart of " + dataElement.name
     arr = []
@@ -28,6 +28,7 @@ nvd3BarChart = (dataElement, div) ->
             .staggerLabels(true)
             .tooltips(false)
             .showValues(true)
+            .forceY([min, max])
 
         svg = d3.select(div)
             .append("svg")

@@ -243,7 +243,7 @@ Meteor.methods(
         console.log div
         if dataElement.name in Session.get("groupable_fields")
             #barchart(dataElement,div,min,max)
-            nvd3BarChart(dataElement, div)
+            nvd3BarChart(dataElement, div, 0, max)
         else
             boxplot(dataElement,div,min,max)
 
