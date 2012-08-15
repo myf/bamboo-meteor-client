@@ -18,6 +18,8 @@ nvd3BarChart = (dataElement, div, min, max) ->
         chart = nv.models.discreteBarChart()
             .width(width)
             .height(height)
+            #change the margin
+            .margin({top:30, right:10, bottom:50, left:60})
             .x( (d)->
                 d.label
             )
@@ -26,8 +28,8 @@ nvd3BarChart = (dataElement, div, min, max) ->
             )
             .rotateLabels(-45)
             .staggerLabels(true)
-            .tooltips(false)
-            .showValues(true)
+            .tooltips(true)
+            .showValues(false)
             .forceY([min, max])
 
         svg = d3.select(div)
@@ -37,7 +39,7 @@ nvd3BarChart = (dataElement, div, min, max) ->
         svg.append("text")
             .text(title)
             .attr("x", 100)
-            .attr("y", 11)
+            .attr("y", 12)
             .attr("class", "boxplot_title")
             .attr("fill", "black")
         svg.datum(dataset)

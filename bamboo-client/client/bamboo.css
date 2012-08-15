@@ -93,7 +93,7 @@ input{
 
 .barChartSVG {
     width: 300px;
-    height: 270px;
+    height: 300px;
     display: inline;
 }
 .boxplot_title {
@@ -111,3 +111,8 @@ input{
     margin-top: -7px;
 }
 
+
+.individual_graph {
+    width: 320px;
+    height: 270px;
+}

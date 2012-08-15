@@ -241,9 +241,16 @@ Meteor.methods(
         [div, dataElement, min, max] =obj
         #chart based on groupable property
         console.log div
+        #create individual divs
+        #because nvd3 doesn't display tooltip box well
+        $(div).append('<div id="'+div.id+'_'+dataElement.groupVal\
+            +'" class="individual_graph span1"></div>')
+        individual_div = $("#"+div.id+"_"+dataElement.groupVal).get(0)
+
         if dataElement.name in Session.get("groupable_fields")
             #barchart(dataElement,div,min,max)
-            nvd3BarChart(dataElement, div, 0, max)
+            #nvd3BarChart(dataElement, div, 0, max)
+            nvd3BarChart(dataElement, individual_div, 0, max)
         else
             boxplot(dataElement,div,min,max)
 
