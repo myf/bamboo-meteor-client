@@ -252,7 +252,7 @@ Meteor.methods(
             #nvd3BarChart(dataElement, div, 0, max)
             nvd3BarChart(dataElement, individual_div, 0, max)
         else
-            boxplot(dataElement,div,min,max)
+            boxplot(dataElement,individual_div,min,max)
 
 
 
