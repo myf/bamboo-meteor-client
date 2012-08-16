@@ -263,9 +263,9 @@ boxplot= (dataElement, div, min, max)->
     name = dataElement.name
     data = dataElement.data
     if (dataElement.groupKey is "") and (dataElement.groupVal is "")
-        title = name + "(" + data.count + ")"
+        title = name + " (" + data.count + ")"
     else
-        title = dataElement.groupKey + " : " + dataElement.groupVal + "(" + data.count + ")"
+        title = dataElement.groupKey + " : " + dataElement.groupVal + " (" + data.count + ")"
     if data.count is 1
         console.log "data.count is one"
         display_name = dataElement.groupVal
@@ -302,7 +302,7 @@ boxplot= (dataElement, div, min, max)->
     #add the title
     svg.append("text")
         .text(title)
-        .attr("x",x_padding)
+        .attr("x", width/3)
         .attr("y", y_padding_1/2)
         .attr("font-family", "sans-serif")
         .attr("font-size", "16px")

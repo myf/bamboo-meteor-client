@@ -116,3 +116,10 @@ input{
     width: 320px;
     height: 270px;
 }
+
+.nvd3 .nv-axis line {
+  fill: none;
+  stroke: #000;
+  stroke-opacity: 0;
+  shape-rendering: crispEdges;
+}

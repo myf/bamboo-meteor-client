@@ -84,6 +84,8 @@ Meteor.methods(
                     " and bambooID " + bambooID + " is already cached")
             else
                 Meteor.http.call "GET", schemaURLf(bambooID), (error, result)->
+                    #TODO: delete this consolelog
+                    console.log schemaURLf(bambooID)
                     if not(error is null)
                         console.log error
                     else

@@ -8,9 +8,9 @@ nvd3BarChart = (dataElement, div, min, max) ->
     dataset = [ { key : str, values: arr }]
     
     if (dataElement.groupKey is "") and (dataElement.groupVal is "")
-        title = dataElement.name + "(" + count + ")"
+        title = dataElement.name + " (" + count + ")"
     else
-        title = dataElement.groupKey + " : " + dataElement.groupVal + "(" + count + ")"
+        title = dataElement.groupKey + " : " + dataElement.groupVal + " (" + count + ")"
 
     nv.addGraph( () ->
         width = 300
@@ -35,17 +35,18 @@ nvd3BarChart = (dataElement, div, min, max) ->
         svg = d3.select(div)
             .append("svg")
             .attr("class", "barChartSVG")
-           
+
         svg.append("text")
             .text(title)
-            .attr("x", 100)
+            .attr("x", 130)
             .attr("y", 12)
             .attr("class", "boxplot_title")
             .attr("fill", "black")
+
         svg.datum(dataset)
             .transition().duration(500)
             .call(chart)
-
+        #TODO:what does this line do?
         nv.utils.windowResize(chart.update)
 
         return chart
