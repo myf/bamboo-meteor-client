@@ -3,8 +3,13 @@ nvd3BarChart = (dataElement, div, min, max) ->
     str = "Bar Chart of " + dataElement.name
     arr = []
     for key of dataElement.data
-        arr.push( { label : key, value : dataElement.data[key]})
         count += dataElement.data[key]
+    for key of dataElement.data
+        arr.push
+            label : key
+            value : dataElement.data[key]
+            percentage : Math.round(dataElement.data[key] * 100 / count) + "%"
+            
     dataset = [ { key : str, values: arr }]
     
     if (dataElement.groupKey is "") and (dataElement.groupVal is "")
@@ -29,6 +34,12 @@ nvd3BarChart = (dataElement, div, min, max) ->
             .rotateLabels(-45)
             .staggerLabels(true)
             .tooltips(true)
+            .tooltipContent((key, x, y, e, graph)->
+                for item in e.series.values
+                    if item.label is x
+                        per = item.percentage
+                return '<h3>' + x + '</h3>' + '<p>' +  y + '</p>' + '<p>' + per + '</p>'
+            )
             .showValues(false)
             .forceY([min, max])
 
