@@ -3,6 +3,7 @@ body{
 /*    background:#CCE89B;
 */    background: rgba(1, 1, 1, 0.01);
 }
+
 input{
     width:300px;
     height:20px;
@@ -12,13 +13,16 @@ input{
 #dataSourceURL{
     margin-top:10px;
 }
+
 #submitURL{
     margin-left:10px;
 }
+
 .url_init{
     position:absolute;
     top:50%;
 }
+
 .logo_bamboo{
     position:absolute;
     top:40%;
@@ -26,15 +30,19 @@ input{
     width:200;
     height:100;
 }
+
 .control{
     margin-top:50px;
 }
+
 .navbar-inner{
     background:grey;
 }
+
 .chosen{
     width:200px;
 }
+
 #chartBtn{
     margin-top:20px;
 }
@@ -97,20 +105,21 @@ input{
     display: inline;
 }
 .boxplot_title {
-    font-family: "sans-serif";
-    font-size: 16px;
+    font-family: "Helvetica";
+    font-size: 15px;
+    font-weight: bold;
 }
 
 #graph_title {
     font-weight:normal;
 }
+
 #download_btn_img {
     width: 17px;
     height: 17px;
     opacity:0.5;
     margin-top: -7px;
 }
-
 
 .individual_graph {
     width: 320px;

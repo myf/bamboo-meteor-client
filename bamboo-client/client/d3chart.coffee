@@ -304,8 +304,9 @@ boxplot= (dataElement, div, min, max)->
         .text(title)
         .attr("x", width/3)
         .attr("y", y_padding_1/2)
-        .attr("font-family", "sans-serif")
-        .attr("font-size", "16px")
+        .attr("font-family", "Helvetica")
+        .attr("font-size", "15px")
+        .attr("font-weight", "bold")
         .attr("class","boxplot_title")
         .attr("fill", "black")
 

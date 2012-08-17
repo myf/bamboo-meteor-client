@@ -53,6 +53,9 @@ nvd3BarChart = (dataElement, div, min, max) ->
             .attr("y", 12)
             .attr("class", "boxplot_title")
             .attr("fill", "black")
+            .attr("font-family", "Helvetica")
+            .attr("font-size", "15px")
+            .attr("font-weight", "bold")
 
         svg.datum(dataset)
             .transition().duration(500)
