@@ -108,6 +108,14 @@ if root.Meteor.is_client
     root.Template.control_panel.waiting=->
         Session.get('waiting')
 
+    root.Template.graph.waiting=->
+        console.log "session waiting"
+        Session.get('waiting')
+
+    root.Template.control_panel.toggle=->
+        Meteor.defer ->
+            $('#control_logic').slideToggle('fast')
+
     root.Template.control_panel.events= {
         "click #chartBtn": ->
             group = $('#group-by').val()
@@ -123,6 +131,7 @@ if root.Meteor.is_client
             #Meteor.call("summarized_by_total_non_recurse",[url,group])
             Session.set('currentGroup', group)
             Session.set('currentView', view_field)
+            Session.set('addNewGraphFlag', true)
             Session.set('waiting', true)
             Session.set(view_field + '_' + group, true)
             
@@ -148,13 +157,13 @@ if root.Meteor.is_client
     root.Template.control_panel.charting =->
         #todo: move summarize_by_group here?
         #todo: use async to serize sum & charting
+        
         fieldInterval = setInterval(->
                 console.log "hardcore summary action"
                 summary = Summaries.findOne( {groupKey : Session.get('currentGroup')} )
                 if summary
                     Meteor.call('field_charting')
                     Session.set('waiting', false)
-                    Session.set('addNewGraphFlag', true)
                     clearInterval(fieldInterval)
             ,1000)
         ""
@@ -172,13 +181,13 @@ if root.Meteor.is_client
             divstr = '#' + field + '_' + group + '_graph'
             div = $(divstr)
             if div.children().length == 1
-                svg = "<html><body>"
+                svg = '<html><head><link rel="stylesheet" type="text/css" href="https://raw.github.com/novus/nvd3/master/src/nv.d3.css"></head><body>'
                 svg = svg + div.eq(0).html()
                 svg = svg + "</bdoy></html>"
             else
                 div.eq(0).children().each (i)->
                     $(this).attr('y', i*300)
-                svg = "<html><body>"
+                svg = '<html><head><link rel="stylesheet" type="text/css" href="https://raw.github.com/novus/nvd3/master/src/nv.d3.css"></head><body>'
                 str = div.eq(0).html()
                 svg = svg + str
                 svg = svg + '</body></html>'

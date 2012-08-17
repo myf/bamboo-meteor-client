@@ -123,3 +123,8 @@ input{
   stroke-opacity: 0;
   shape-rendering: crispEdges;
 }
+
+#control_logic {
+    display:none;
+}
+

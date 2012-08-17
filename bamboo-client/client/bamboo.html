@@ -92,6 +92,9 @@
 <template name="control_panel">
 <div class="well span8 offset1">
     {{#if active}}
+    <div id="control_logic">
+    {{toggle}}
+        <div id="chart_control">
             <div class="page-header">
                 <h3>Graphing Control Panel</h3>
             </div>
@@ -116,21 +119,25 @@
                     Chart        
                 </div>
             </div>
-            {{#if waiting}}
-                {{>waiting_graph}}
-                {{charting}}
-            {{/if}}
-    {{else}}
-        <div class="btn btn-large pull-right" id="addNewGraphBtn">
-            <h3>Add a New Graph</h3>
         </div>
+    </div>
+{{else}}
+    {{#if waiting}}
+        {{charting}}
+        {{> waiting_graph}}
+    {{/if}}
+    <div class="btn btn-large pull-right" id="addNewGraphBtn">
+        <h3>Add a New Graph</h3>
+    </div>
     {{/if}}
 </div>
 </template>
 
 <template name="waiting_graph">
+<div class="waiting_graph">
     Proccessing the graphs, waiting a split second...
     <img src="drop.gif">
+</div>
 </template>
  
 <template name="graph">
@@ -143,7 +150,7 @@
         </div>
         <h3 id="graph_title">{{title}}<b>{{field}}</b>{{#if group}} grouped by <b>{{group}}</b>{{/if}}</h3>
     </div>
-        <div class="d3_graph" id="{{field}}_{{group}}_graph"></div>
+    <div class="d3_graph" id="{{field}}_{{group}}_graph"></div>
 </div>
 </template>
 
