@@ -21,10 +21,18 @@
 <template name="body_render">
 {{#if show}}
     {{> introduction}}
-    {{> control_panel}}
-    <div class="graph_area">
+    <div class="graph_panel">
     </div>
+    {{> add_button}}
 {{/if}}
+</template>
+
+<template name="add_button">
+<div class="row">
+<div class="btn btn-large offset7 span2" id="addNewGraphBtn">
+    <h3>Add a New Chart</h3>
+</div>
+</div>
 </template>
             
 <template name="graphing_block">
@@ -59,6 +67,7 @@
 </template>
 
 <template name="introduction">
+<div class="row">
 <div class="well span8 offset1">
     <div class="row">
         <div class="span6">
@@ -87,49 +96,47 @@
     {{/if}}
     </p>
 </div>
+</div>
 </template>
 
 <template name="control_panel">
-<div class="well span8 offset1">
-    {{#if active}}
-    <div id="control_logic">
-    {{toggle}}
-        <div id="chart_control">
-            <div class="page-header">
-                <h3>Graphing Control Panel</h3>
-            </div>
-            <div class="row offset1">
-                <p>
-                    <b>View</b>
-                    {{chosen}}
-                    <select class="chosen" id="view" >
-                        {{#each fields}}
-                            <option>{{this}}</option>
-                        {{/each}}
-                    </select>
-                    <b>Group by</b>
-                    <select data-placeholder="choose a group" class="chosen" id="group-by">
-                        <option></option>
-                        {{#each groups}}
-                            <option>{{this}}</option>
-                        {{/each}}
-                    </select>
-                </p>
-                <div class="btn pull-right" id="chartBtn">
-                    Chart        
+<div class="row">
+    <div class="well span8 offset1" id="control_panel_{{number}}">
+        <div class="controls">
+            <div id="control_logic_{{number}}">
+                {{toggle}toggle
+                <div id="chart_control_{{number}}">
+                    <div class="page-header">
+                        <h3>Create a New Chart</h3>
+                    </div>
+                    <div class="row offset1">
+                        <p>
+                            <b>View</b>
+                            {{chosen}}
+                            <select class="chosen" id="view_{{number}}" >
+                                {{#each fields}}
+                                    <option>{{this}}</option>
+                                {{/each}}
+                            </select>
+                            <b>Group by</b>
+                            <select data-placeholder="choose a group" class="chosen" id="group-by_{{number}}">
+                                <option></option>
+                                {{#each groups}}
+                                    <option>{{this}}</option>
+                                {{/each}}
+                            </select>
+                        </p>
+                        <div class="btn pull-right chartBtn" id="{{number}}">
+                            Chart
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+        <div class="graph_area" style="display: none">
+            {{> waiting_graph}}
+        </div>
     </div>
-{{else}}
-    {{#if waiting}}
-        {{charting}}
-        {{> waiting_graph}}
-    {{/if}}
-    <div class="btn btn-large pull-right" id="addNewGraphBtn">
-        <h3>Add a New Graph</h3>
-    </div>
-    {{/if}}
 </div>
 </template>
 
@@ -141,7 +148,7 @@
 </template>
  
 <template name="graph">
-<div class="well span8 offset1" id="{{field}}_{{group}}_block">
+<div id="{{field}}_{{group}}_block">
     <div class="page-header"> 
         <div class="pull-right" id="{{field}}_{{group}}_btn">
             <div class="btn pointer downloadBtn"><img src="download-icon.svg" id="download_btn_img"></img>Download Chart</div>

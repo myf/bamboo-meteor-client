@@ -80,9 +80,6 @@ if root.Meteor.is_client
 
 
     #####################Control-Panel##################
-    root.Template.control_panel.active = ->
-        not Session.get('addNewGraphFlag')
-
 
     # have to write this code to make chosen recognized in jquery
     root.Template.control_panel.chosen= ->
@@ -104,22 +101,16 @@ if root.Meteor.is_client
         Meteor.call('generate_groupable_fields')
         fields = Session.get('groupable_fields')
 
-    
-    root.Template.control_panel.waiting=->
-        Session.get('waiting')
-
-    root.Template.graph.waiting=->
-        console.log "session waiting"
-        Session.get('waiting')
-
     root.Template.control_panel.toggle=->
         Meteor.defer ->
             $('#control_logic').slideToggle('fast')
 
-    root.Template.control_panel.events= {
-        "click #chartBtn": ->
-            group = $('#group-by').val()
-            view_field = $('#view').val()
+    root.Template.control_panel.events=
+        "click .chartBtn": (event)->
+            number = event.target.id
+        
+            group = $('#group-by_' + number).val()
+            view_field = $('#view_' + number).val()
 
             #check whether graph exists already
             if Session.get(view_field + '_' + group)
@@ -132,7 +123,6 @@ if root.Meteor.is_client
             Session.set('currentGroup', group)
             Session.set('currentView', view_field)
             Session.set('addNewGraphFlag', true)
-            Session.set('waiting', true)
             Session.set(view_field + '_' + group, true)
             
             #TODO: if the count = 1 when drawing box plot
@@ -148,25 +138,24 @@ if root.Meteor.is_client
                     group: group
                 })
             )
-            $(".graph_area")[0].insertBefore(frag,$(".graph_area")[0].childNodes[0])
+            
+            Meteor.defer ->
+                graph = $('#control_panel_' + number)
+                graph.children('.controls').hide()
+                graph_area = graph.children('.graph_area')
+                graph_area.show()
 
-        "click #addNewGraphBtn": ->
-            Session.set('addNewGraphFlag', false)
-    }
+                fieldInterval = setInterval(->
+                    console.log "hardcore summary action"
+                    summary = Summaries.findOne( {groupKey : Session.get('currentGroup')} )
+                    if summary
+                        $(graph_area).html(frag)
+                        Meteor.call('field_charting')
+                        Session.set('waiting', false)
+                        clearInterval(fieldInterval)
+                ,1000)
+                ""
 
-    root.Template.control_panel.charting =->
-        #todo: move summarize_by_group here?
-        #todo: use async to serize sum & charting
-        
-        fieldInterval = setInterval(->
-                console.log "hardcore summary action"
-                summary = Summaries.findOne( {groupKey : Session.get('currentGroup')} )
-                if summary
-                    Meteor.call('field_charting')
-                    Session.set('waiting', false)
-                    clearInterval(fieldInterval)
-            ,1000)
-        ""
     #########GRAPH###############################
     root.Template.graph.events =
         "click .deletionBtn": ->
@@ -210,6 +199,23 @@ if root.Meteor.is_client
                 saveAs(output, filename)
             )
 
+root.Template.add_button.events=
+        "click #addNewGraphBtn": ->
+            fields = Session.get("visible_fields")
+            groups = Session.get("groupable_fields")
+            num_charts = (Session.get("num_charts") ? 0) + 1
+            Session.set("num_charts", num_charts)
+            console.log num_charts
+            frag = Meteor.ui.render(->
+                return Template.control_panel({
+                    number: num_charts
+                    active: true
+                    fields: fields
+                    groups: groups
+                })
+            )
+            console.log frag
+            $(".graph_panel").append(frag)
 
 ############# UI LIB #############################
 
@@ -248,13 +254,13 @@ Meteor.methods(
 
     make_single_chart: (obj) ->
         [div, dataElement, min, max] =obj
-        #chart based on groupable property
+        # chart based on groupable property
         console.log div
-        #create individual divs
-        #because nvd3 doesn't display tooltip box well
-        $(div).append('<div id="'+div.id+'_'+dataElement.groupVal\
-            +'" class="individual_graph span1"></div>')
-        individual_div = $("#"+div.id+"_"+dataElement.groupVal).get(0)
+        # create individual divs
+        # because nvd3 doesn't display tooltip box well
+        $(div).append('<div id="' + div.id + '_' + dataElement.groupVal\
+            + '" class="individual_graph span1"></div>')
+        individual_div = $("#" + div.id + "_" + dataElement.groupVal).get(0)
 
         if dataElement.name in Session.get("groupable_fields")
             #barchart(dataElement,div,min,max)
@@ -276,7 +282,7 @@ Meteor.methods(
             name: field
         .fetch()
 
-        div = $("#" + field+"_"+group+"_graph").get(0)
+        div = $("#" + field + "_" + group + "_graph").get(0)
         console.log "before max / min"
         max_arr = item_list.map (item)->
             if item.name in groupable
