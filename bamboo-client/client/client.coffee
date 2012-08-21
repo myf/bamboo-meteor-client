@@ -206,7 +206,7 @@ root.Template.add_button.events=
             num_charts = (Session.get("num_charts") ? 0) + 1
             Session.set("num_charts", num_charts)
             console.log num_charts
-            frag = Meteor.ui.render(->
+            frag = Meteor.ui.chunck(->
                 return Template.control_panel({
                     number: num_charts
                     active: true
