@@ -21,7 +21,12 @@
 <template name="body_render">
 {{#if show}}
     {{> introduction}}
+    <div class="row">
+        <div class="well span8 offset1" id="graph_panel">
+        </div>
+    </div>
     <div class="graph_panel">
+        {{> control_panel}}
     </div>
     {{> add_button}}
 {{/if}}
@@ -101,11 +106,11 @@
 
 <template name="control_panel">
 <div class="row">
-    <div class="well span8 offset1" id="control_panel_{{number}}">
+    <div class="well span8 offset1" id="control_panel" style="display:none">
         <div class="controls">
-            <div id="control_logic_{{number}}">
+            <div id="control_logic">
                 {{toggle}}
-                <div id="chart_control_{{number}}">
+                <div id="chart_control">
                     <div class="page-header">
                         <h3>Create a New Chart</h3>
                     </div>
@@ -113,13 +118,13 @@
                         <p>
                             <b>View</b>
                             {{chosen}}
-                            <select class="chosen" id="view_{{number}}" >
+                            <select class="chosen" id="view" >
                                 {{#each fields}}
                                     <option>{{this}}</option>
                                 {{/each}}
                             </select>
                             <b>Group by</b>
-                            <select data-placeholder="choose a group" class="chosen" id="group-by_{{number}}">
+                            <select data-placeholder="choose a group" class="chosen" id="group-by">
                                 <option></option>
                                 {{#each groups}}
                                     <option>{{this}}</option>

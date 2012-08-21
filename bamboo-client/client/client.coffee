@@ -107,10 +107,8 @@ if root.Meteor.is_client
 
     root.Template.control_panel.events=
         "click .chartBtn": (event)->
-            number = event.target.id
-        
-            group = $('#group-by_' + number).val()
-            view_field = $('#view_' + number).val()
+            group = $('#group-by').val()
+            view_field = $('#view').val()
 
             #check whether graph exists already
             if Session.get(view_field + '_' + group)
@@ -132,18 +130,15 @@ if root.Meteor.is_client
             else
                 title = "Box Plot of "
             frag = Meteor.ui.render( ->
-                Meteor.ui.chunk( ->
-                    return Template.graph({
-                        title: title
-                        field: view_field
-                        group: group
-                    })
-                )
+                return Template.graph({
+                    title: title
+                    field: view_field
+                    group: group
+                })
             )
             
             Meteor.defer ->
-                graph = $('#control_panel_' + number)
-                graph.children('.controls').hide()
+                graph = $('#control_panel')
                 graph_area = graph.children('.graph_area')
                 graph_area.show()
 
@@ -151,7 +146,9 @@ if root.Meteor.is_client
                     console.log "hardcore summary action"
                     summary = Summaries.findOne( {groupKey : Session.get('currentGroup')} )
                     if summary
-                        $(graph_area).html(frag)
+                        graph_area.hide()
+                        graph.hide()
+                        $('#graph_panel').append(frag)
                         Meteor.call('field_charting')
                         Session.set('waiting', false)
                         clearInterval(fieldInterval)
@@ -203,6 +200,8 @@ if root.Meteor.is_client
 
 root.Template.add_button.events=
         "click #addNewGraphBtn": ->
+            $('#control_panel').show()
+            ###
             fields = Session.get("visible_fields")
             groups = Session.get("groupable_fields")
             num_charts = (Session.get("num_charts") ? 0) + 1
@@ -225,8 +224,9 @@ root.Template.add_button.events=
                 )
             )
             console.log frag
-            alert num_charts
-            $(".graph_panel").append(frag)
+            Meteor.defer ->
+                $(".graph_panel").append(frag)
+            ###
 
 ############# UI LIB #############################
 
