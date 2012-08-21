@@ -132,11 +132,13 @@ if root.Meteor.is_client
             else
                 title = "Box Plot of "
             frag = Meteor.ui.render( ->
-                return Template.graph({
-                    title: title
-                    field: view_field
-                    group: group
-                })
+                Meteor.ui.chunk( ->
+                    return Template.graph({
+                        title: title
+                        field: view_field
+                        group: group
+                    })
+                )
             )
             
             Meteor.defer ->
@@ -206,15 +208,24 @@ root.Template.add_button.events=
             num_charts = (Session.get("num_charts") ? 0) + 1
             Session.set("num_charts", num_charts)
             console.log num_charts
-            frag = Meteor.ui.chunck(->
-                return Template.control_panel({
-                    number: num_charts
-                    active: true
-                    fields: fields
-                    groups: groups
-                })
+            frag = Meteor.ui.render(->
+                Meteor.ui.chunk(->
+                    return Template.control_panel({
+                        number: num_charts
+                        active: true
+                        fields: fields
+                        groups: groups
+                        toggle: ()->
+                            Meteor.defer ->
+                                $('#control_logic').slideToggle('fast')
+                        chosen: ()->
+                            Meteor.defer ->
+                                Meteor.call('chosen')
+                    })
+                )
             )
             console.log frag
+            alert num_charts
             $(".graph_panel").append(frag)
 
 ############# UI LIB #############################
